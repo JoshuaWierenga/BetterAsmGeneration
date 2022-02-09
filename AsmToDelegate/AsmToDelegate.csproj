@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <Version>0.0.2-alpha</Version>
+    <Authors>WhiteBlackGoose</Authors>
+    <Copyright>© WhiteBlackGoose 2021-2022</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>Cursed (so far windows-only) thing which ehhhhhhhh lazy to write more.</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/WhiteBlackGoose/AsmToDelegate</RepositoryUrl>
+    <PackageTags>performance, jit, codegen</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="OtherExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="OtherExtensions.cs" />
+  </ItemGroup>
+
+<!--
+  <ItemGroup>
+    <Compile Update="PublicExtensions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PublicExtensions.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PublicExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PublicExtensions.cs</LastGenOutput>
+    </Compile>
+  </ItemGroup>
+-->
+
+  <ItemGroup>
+    <Compile Update="PublicExtensions.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PublicExtensions.tt</DependentUpon>
+    </Compile>
+    <None Update="PublicExtensions.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PublicExtensions.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Iced" Version="1.16.0" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+
+</Project>

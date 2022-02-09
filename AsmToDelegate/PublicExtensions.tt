@@ -1,0 +1,60 @@
+﻿using Iced.Intel;
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
+
+namespace AsmToDelegate;
+
+public unsafe static class Extensions
+{
+<# for (int i = 0; i < 8; i++) { #>
+<#
+    var ins = "";
+    for (int j = 1; j <= i; j++)
+        ins += $"TIn{j}, ";
+    var passed = "";
+    for (int j = 1; j <= i; j++)
+        passed += $"a{j}, ";
+    if (passed.Length > 0)
+        passed = passed.Substring(0, passed.Length - 2);
+#>
+    public struct UnmanagedFunctionWinX64<<#= ins #>TOut>
+    {
+        public delegate* unmanaged[Cdecl]<<#= ins #>TOut> Delegate { get; }
+
+        public UnmanagedUntypedFuncInfo FuncInfo { get; }
+
+        public UnmanagedFunctionWinX64(delegate* unmanaged[Cdecl]<<#= ins #>TOut> fnptr, UnmanagedUntypedFuncInfo funcInfo)
+        {
+            Delegate = fnptr;
+            FuncInfo = funcInfo;
+        }
+
+        public void Free() => FuncInfo.Free();
+    }
+
+    public static UnmanagedFunctionWinX64<<#= ins #>TOut> ToUnmanagedFunctionWinX64<<#= ins #>TOut>(this Assembler asm)
+    {
+        var s = BuilderToMemory.CompileX64Windows(asm);
+        return new UnmanagedFunctionWinX64<<#= ins #>TOut>((delegate* unmanaged[Cdecl]<<#= ins #>TOut>)s.Pointer, s);
+    }
+
+    public static delegate* unmanaged[Cdecl]<<#= ins #>TOut> ToFunctionPointerWinX64<<#= ins #>TOut>(this Assembler asm)
+    {
+        var s = BuilderToMemory.CompileX64Windows(asm);
+        return (delegate* unmanaged[Cdecl]<<#= ins #>TOut>)s.Pointer;
+    }
+
+    public static Func<<#= ins #>TOut> ToDelegate<<#= ins #>TOut>(this Assembler asm)
+    {
+        var s = BuilderToMemory.CompileX64Windows(asm);
+        // return Marshal.GetDelegateForFunctionPointer<Func<<#= ins #>TOut>>((IntPtr)s.Pointer);
+        var ptr = (long)(IntPtr)s.Pointer;
+        return ((<#= passed #>) => {
+            var del = (delegate* unmanaged[Cdecl]<<#= ins #>TOut>)ptr;
+            return del(<#= passed #>);
+        });
+    }
+
+<# } #> 
+} 
