@@ -3,7 +3,7 @@ using Iced.Intel;
 
 #nullable enable
 
-namespace BetterAsm;
+namespace AsmGenerator;
 
 public readonly struct BetterInstruction
 {
@@ -55,14 +55,10 @@ public struct AssemblyData
             return Instruction.ToString();
         }
 
-#if DEBUG
         if (Operand != Register.None)
         {
-#endif
             return Operand.ToString();
-#if DEBUG
         }
-#endif
 
         throw new ArgumentOutOfRangeException();
     }

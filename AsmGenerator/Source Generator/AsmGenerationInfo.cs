@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AsmGenerator;
+namespace AsmGenerator.Source_Generator;
 
 internal class AsmGenerationInfo
 {

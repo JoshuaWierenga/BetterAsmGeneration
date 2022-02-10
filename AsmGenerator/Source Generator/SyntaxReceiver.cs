@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AsmGenerator
+namespace AsmGenerator.Source_Generator
 {
     internal class SyntaxReceiver : ISyntaxReceiver
     {

@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmMessaround", "AsmMessaro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmToDelegate", "AsmToDelegate\AsmToDelegate.csproj", "{98B91635-9BE0-433A-868A-2DE5E62A8802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterAsm", "BetterAsm\BetterAsm.csproj", "{2AD65E71-A4D3-4AED-955E-4FCD252287A7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmGenerator", "AsmGenerator\AsmGenerator.csproj", "{648BB631-4B75-48AC-A565-EC414648F907}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmGenerator", "AsmGenerator\AsmGenerator.csproj", "{648BB631-4B75-48AC-A565-EC414648F907}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{98B91635-9BE0-433A-868A-2DE5E62A8802}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98B91635-9BE0-433A-868A-2DE5E62A8802}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98B91635-9BE0-433A-868A-2DE5E62A8802}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AD65E71-A4D3-4AED-955E-4FCD252287A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AD65E71-A4D3-4AED-955E-4FCD252287A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AD65E71-A4D3-4AED-955E-4FCD252287A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AD65E71-A4D3-4AED-955E-4FCD252287A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{648BB631-4B75-48AC-A565-EC414648F907}.Release|Any CPU.ActiveCfg = Release|Any CPU

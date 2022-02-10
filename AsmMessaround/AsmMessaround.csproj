@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BetterAsm\BetterAsm.csproj" />
-    <ProjectReference Include="..\AsmGenerator\AsmGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\AsmGenerator\AsmGenerator.csproj" OutputItemType="Analyzer" />
+    <ProjectReference Include="..\AsmToDelegate\AsmToDelegate.csproj" />
   </ItemGroup>
 
 </Project>

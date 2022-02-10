@@ -1,5 +1,6 @@
-﻿using BetterAsm;
-using Iced.Intel;
+﻿using Iced.Intel;
+
+namespace AsmGenerator;
 
 public static class BetterAsmInstructions
 {

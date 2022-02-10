@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics;
+using AsmGenerator;
 using AsmToDelegate;
-using static BetterAsmInstructions;
+using static AsmGenerator.BetterAsmInstructions;
 using static Iced.Intel.AssemblerRegisters;
-
 
 unsafe
 {
-    var asm = AsmGeneration.CompileTimeBetterInstructionCollection.Parse
+    var asm = CompileTimeBetterInstructionCollection.Parse
     (
         mov, rax, rcx,
         add, rax, rdx,

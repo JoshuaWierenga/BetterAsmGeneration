@@ -2,8 +2,9 @@
 <#@ assembly name="C:\\Users\\Joshua Wierenga\\.nuget\\packages\\iced\\1.15.0\\lib\\net45\\Iced.dll" #>
 <#@ import namespace="Iced.Intel" #>
 <#@ output extension=".cs" #>
-using BetterAsm;
 using Iced.Intel;
+
+namespace AsmGenerator;
 
 public static class BetterAsmInstructions
 {
