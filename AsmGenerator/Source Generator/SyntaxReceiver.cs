@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,11 +23,11 @@ namespace AsmGenerator.Source_Generator
                         Name.Identifier.ValueText: "Parse",
                         Expression: IdentifierNameSyntax
                         {
-                            Identifier.ValueText: "CompileTimeBetterInstructionCollection"
+                            Identifier.ValueText: "Generator"
                         }
                         or MemberAccessExpressionSyntax
                         {
-                            Name.Identifier.ValueText: "CompileTimeBetterInstructionCollection"
+                            Name.Identifier.ValueText: "Generator"
                         }
                     }
                 })

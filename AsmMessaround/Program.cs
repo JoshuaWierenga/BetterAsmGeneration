@@ -5,7 +5,7 @@ using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    /*var asm = CompileTimeBetterInstructionCollection.Parse
+    /*var asm = Generator.Parse
     (
         mov, rax, rcx,
         add, rax, rdx,
@@ -22,7 +22,7 @@ unsafe
     var c = r8;
     var d = r9;
 
-    var asm2 = CompileTimeBetterInstructionCollection.Parse
+    var asm2 = Generator.Parse
     (
         mov, rax, a,
         imul, rax, b,
@@ -36,7 +36,7 @@ unsafe
     Debug.Assert(210L == addFunction2(5, 2, 10, 20));
     Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + add(5, 2, 10, 20));*/
 
-    var asm3 = CompileTimeBetterInstructionCollection.Parse
+    var asm3 = Generator.Parse
     (
         rdtsc,
         shl, rdx, 32,

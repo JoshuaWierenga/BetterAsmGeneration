@@ -19,7 +19,7 @@ using Iced.Intel;
 
 namespace AsmGenerator
 {
-    internal static class CompileTimeBetterInstructionCollection
+    internal static class Generator
     {
         public static Assembler Parse(params AssemblyData[] assembly)
         {
@@ -116,7 +116,7 @@ using static Iced.Intel.AssemblerRegisters;
 
 namespace AsmGenerator
 {
-    internal static class CompileTimeBetterInstructionCollection
+    internal static class Generator
     {");
         foreach (AsmGenerationInfo asmGenerationInfo in asmGenerationInfos)
         {
