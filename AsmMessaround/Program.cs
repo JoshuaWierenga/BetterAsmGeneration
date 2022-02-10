@@ -1,4 +1,5 @@
-﻿using AsmGenerator;
+﻿using System.Diagnostics;
+using AsmGenerator;
 using AsmToDelegate;
 using Iced.Intel;
 using static AsmGenerator.Instructions;
@@ -6,7 +7,7 @@ using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    /*var asm = new Assembler(bitness: 64);
+    var asm = new Assembler(bitness: 64);
     asm.AddInstructions
     (
         mov, rax, rcx,
@@ -16,7 +17,7 @@ unsafe
 
     var addFunction = asm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
     Debug.Assert(44ul == addFunction(31, 13));
-    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));*/
+    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));
 
     //TODO Support variables
     /*var a = rcx;

@@ -3,12 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AsmGenerator.Source_Generator;
 
+//TODO Ensure two requests for the same assembly don't cause issues
+//TODO Ensure AddInstructions can be called multiple times for the same Assembler
 [Generator]
 public class AsmGenerator : ISourceGenerator
 {
@@ -63,6 +66,8 @@ namespace AsmGenerator
     private static IEnumerable<AsmGenerationInfo> GetAsmGenerationInfo(Compilation compilation,
         List<SyntaxNode> assemblerParseCalls)
     {
+        using MD5 md5 = MD5.Create();
+
         foreach (SyntaxNode assemblerParseCall in assemblerParseCalls)
         {
             //TODO Use data outside of invocation.ArgumentList or just return that from SyntaxReceiver
@@ -70,6 +75,7 @@ namespace AsmGenerator
             SemanticModel semanticModel = compilation.GetSemanticModel(invocation.ArgumentList.SyntaxTree);
 
             List<Tuple<string, List<string>>> instructionData = new();
+            StringBuilder sbInstruction = new();
 
             //TODO Remove
             //Debugger.Launch();
@@ -84,14 +90,17 @@ namespace AsmGenerator
                         string instructionLabel = identifier.Identifier.ValueText.ToLower();
                         instructionData.Add(
                             new Tuple<string, List<string>>(instructionLabel, new List<string>()));
+                        sbInstruction.Append(instructionLabel);
                         break;
                     case IdentifierNameSyntax identifier when instructionData.Count > 0:
                         string operandLabel = identifier.Identifier.ValueText.ToLower();
                         instructionData.Last().Item2.Add(operandLabel);
+                        sbInstruction.Append(operandLabel);
                         break;
                     case LiteralExpressionSyntax literal when instructionData.Count > 0:
                         string literalValue = literal.Token.ValueText;
                         instructionData.Last().Item2.Add(literalValue);
+                        sbInstruction.Append(literalValue);
                         break;
                     default:
                         //TODO Tidy!
@@ -99,7 +108,12 @@ namespace AsmGenerator
                 }
             }
 
-            yield return new AsmGenerationInfo(instructionData);
+            // get a stable id for the code in a reasonably quick way
+            string asmString = sbInstruction.ToString();
+            byte[] asmHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+            string asmGuid = new Guid(asmHash).ToString("N");
+
+            yield return new AsmGenerationInfo(instructionData, asmGuid);
         }
     }
 
@@ -118,6 +132,8 @@ namespace AsmGenerator
 {
     internal static class Generator
     {");
+        GenerateAsmWrapperMethod(context, sb, asmGenerationInfos, indent);
+
         foreach (AsmGenerationInfo asmGenerationInfo in asmGenerationInfos)
         {
             GenerateAsmConverterMethod(context, sb, asmGenerationInfo, indent);
@@ -129,11 +145,52 @@ namespace AsmGenerator
     }
 
     //TODO Write summary
+    private static void GenerateAsmWrapperMethod(GeneratorExecutionContext context, StringBuilder sb, IEnumerable<AsmGenerationInfo> asmGenerationInfos, string indent)
+    {
+        sb.AppendLine($"{indent}// <summary> </summary>");
+        sb.AppendLine($"{indent}public static void AddInstructions(this Assembler assembler, params AssemblyData[] assembly)");
+        sb.AppendLine($"{indent}{{");
+
+        GenerateAsmWrapperMethodBody(context, sb, asmGenerationInfos, indent + "    ");
+
+        sb.AppendLine($"{indent}}}");
+        sb.AppendLine();
+    }
+
+    private static void GenerateAsmWrapperMethodBody(GeneratorExecutionContext context, StringBuilder sb, IEnumerable<AsmGenerationInfo> asmGenerationInfos, string indent)
+    {
+        sb.AppendLine($"{indent}string guid = AssemblyData.GetGuid(assembly);");
+        sb.AppendLine();
+        sb.AppendLine($"{indent}switch (guid)");
+        sb.AppendLine($"{indent}{{");
+
+        GenerateAsmWrapperMethodBodySwitchBody(context, sb, asmGenerationInfos, indent + "    ");
+
+        sb.AppendLine($"{indent}}}");
+    }
+
+    private static void GenerateAsmWrapperMethodBodySwitchBody(GeneratorExecutionContext context, StringBuilder sb, IEnumerable<AsmGenerationInfo> asmGenerationInfos, string indent)
+    {
+        string innerIndent = indent + "    ";
+
+        foreach (AsmGenerationInfo asmGenerationInfo in asmGenerationInfos)
+        {
+            sb.AppendLine($"{indent}case \"{asmGenerationInfo.InstructionGuid}\":");
+            sb.AppendLine($"{innerIndent}Instructions{asmGenerationInfo.InstructionGuid}(assembler);");
+            sb.AppendLine($"{innerIndent}break;");
+        }
+
+        sb.AppendLine($"{indent}default:");
+        //TODO Add better exception
+        sb.AppendLine($"{innerIndent}throw new Exception();");
+    }
+
+    //TODO Write summary
     private static void GenerateAsmConverterMethod(GeneratorExecutionContext context, StringBuilder sb,
         AsmGenerationInfo asmGenerationInfo, string indent)
     {
         sb.AppendLine($"{indent}// <summary> </summary>");
-        sb.AppendLine($"{indent}public static void AddInstructions(this Assembler assembler, params AssemblyData[] assembly)");
+        sb.AppendLine($"{indent}private static void Instructions{asmGenerationInfo.InstructionGuid}(Assembler assembler)");
         sb.AppendLine($"{indent}{{");
 
         GenerateAsmConverterMethodBody(context, sb, asmGenerationInfo, indent + "    ");

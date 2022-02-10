@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Iced.Intel;
 
 namespace AsmGenerator;
@@ -77,7 +80,7 @@ public struct AssemblyData
             Type = AssemblyDataType.ImmediateU8,
             Immediate = new IntegerWrapper(immU8)
         };
-    
+
     public static implicit operator AssemblyData(short immS16) =>
         new()
         {
@@ -136,5 +139,22 @@ public struct AssemblyData
             AssemblyDataType.ImmediateU64 => Immediate.intU64.ToString(),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    public static string GetGuid(IEnumerable<AssemblyData> data)
+    {
+        StringBuilder sb = new();
+
+        foreach (AssemblyData token in data)
+        {
+            sb.Append(token.ToString().ToLower());
+        }
+
+        using MD5 md5 = MD5.Create();
+        string asmString = sb.ToString();
+        byte[] asmHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+        string asmGuid = new Guid(asmHash).ToString("N");
+
+        return asmGuid;
     }
 }

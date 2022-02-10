@@ -7,8 +7,11 @@ internal class AsmGenerationInfo
 {
     public List<Tuple<string, List<string>>> InstructionLabels;
 
-    public AsmGenerationInfo(List<Tuple<string, List<string>>> instructionLabels)
+    public string InstructionGuid;
+
+    public AsmGenerationInfo(List<Tuple<string, List<string>>> instructionLabels, string instructionGuid)
     {
         InstructionLabels = instructionLabels;
+        InstructionGuid = instructionGuid;
     }
 }
