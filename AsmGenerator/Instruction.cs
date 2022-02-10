@@ -1,8 +1,6 @@
 ﻿using System;
 using Iced.Intel;
 
-#nullable enable
-
 namespace AsmGenerator;
 
 public readonly struct Instruction

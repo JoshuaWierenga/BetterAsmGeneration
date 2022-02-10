@@ -1,12 +1,11 @@
-﻿using System.Diagnostics;
-using AsmGenerator;
+﻿using AsmGenerator;
 using AsmToDelegate;
 using static AsmGenerator.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    var asm = CompileTimeBetterInstructionCollection.Parse
+    /*var asm = CompileTimeBetterInstructionCollection.Parse
     (
         mov, rax, rcx,
         add, rax, rdx,
@@ -15,7 +14,7 @@ unsafe
 
     var addFunction = asm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
     Debug.Assert(44ul == addFunction(31, 13));
-    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));
+    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));*/
 
     //TODO Support variables
     /*var a = rcx;
@@ -23,7 +22,7 @@ unsafe
     var c = r8;
     var d = r9;
 
-    var asm2 = AsmGeneration.CompileTimeBetterInstructionCollection.Parse
+    var asm2 = CompileTimeBetterInstructionCollection.Parse
     (
         mov, rax, a,
         imul, rax, b,
@@ -38,7 +37,7 @@ unsafe
     Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + add(5, 2, 10, 20));*/
 
     //TODO Support constants in generated Assembler
-    /*var asm3 = AsmGeneration.CompileTimeBetterInstructionCollection.Parse
+    var asm3 = AsmGenerator.CompileTimeBetterInstructionCollection.Parse
     (
         rdtsc,
         shl, rdx, 32,
@@ -47,5 +46,5 @@ unsafe
     );
 
     var tsc = asm3.ToFunctionPointerWinX64<ulong>();
-    Console.WriteLine($"{tsc()} cycles since last reset");*/
+    Console.WriteLine($"{tsc()} cycles since last reset");
 }

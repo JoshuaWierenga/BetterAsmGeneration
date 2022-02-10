@@ -78,20 +78,24 @@ namespace AsmGenerator
             {
                 ExpressionSyntax asmData = argument.Expression;
                 ITypeSymbol? typeSymbol = semanticModel.GetTypeInfo(asmData).Type;
-                string asmLabel = ((IdentifierNameSyntax)asmData).Identifier.ValueText.ToLower();
-
-                if (typeSymbol?.Name == "BetterInstruction")
+                switch (asmData)
                 {
-                    instructionData.Add(new Tuple<string, List<string>>(asmLabel, new List<string>()));
-                }
-                else if (instructionData.Count > 0)
-                {
-                    instructionData.Last().Item2.Add(asmLabel);
-                }
-                else
-                {
-                    //TODO Tidy!
-                    throw new Exception();
+                    case IdentifierNameSyntax identifier when typeSymbol?.Name == "Instruction":
+                        string instructionLabel = identifier.Identifier.ValueText.ToLower();
+                        instructionData.Add(
+                            new Tuple<string, List<string>>(instructionLabel, new List<string>()));
+                        break;
+                    case IdentifierNameSyntax identifier when instructionData.Count > 0:
+                        string operandLabel = identifier.Identifier.ValueText.ToLower();
+                        instructionData.Last().Item2.Add(operandLabel);
+                        break;
+                    case LiteralExpressionSyntax literal when instructionData.Count > 0:
+                        string literalValue = literal.Token.ValueText;
+                        instructionData.Last().Item2.Add(literalValue);
+                        break;
+                    default:
+                        //TODO Tidy!
+                        throw new Exception();
                 }
             }
 
