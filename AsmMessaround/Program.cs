@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using AsmGenerator;
 using AsmToDelegate;
-using static AsmGenerator.BetterAsmInstructions;
+using static AsmGenerator.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 unsafe

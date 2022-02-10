@@ -6,7 +6,7 @@ using Iced.Intel;
 
 namespace AsmGenerator;
 
-public static class BetterAsmInstructions
+public static class Instructions
 {
     <# foreach (int i in Enum.GetValues(typeof(Mnemonic)))
     { 
@@ -16,7 +16,7 @@ public static class BetterAsmInstructions
         {
             instructionName = "@" + instructionName;
         } #>
-public static readonly BetterInstruction <#= instructionName #> = new (Mnemonic.<#= mnemonic #>);
+public static readonly Instruction <#= instructionName #> = new (Mnemonic.<#= mnemonic #>);
 
     <# }
     #>

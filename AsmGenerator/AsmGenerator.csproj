@@ -6,14 +6,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="BetterUsage.tt">
+		<Content Include="Instructions.tt">
 			<LastGenOutput>BetterUsage.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
 		</Content>
-		<Compile Update="BetterUsage.cs">
+		<Compile Update="Instructions.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
-			<DependentUpon>BetterUsage.tt</DependentUpon>
+			<DependentUpon>Instructions.tt</DependentUpon>
 		</Compile>
 	</ItemGroup>
 

@@ -1,26 +1,9 @@
 ﻿using System;
 using Iced.Intel;
 
-#nullable enable
-
 namespace AsmGenerator;
 
-public readonly struct BetterInstruction
-{
-    private readonly Mnemonic _instruction;
-
-    internal BetterInstruction(Mnemonic instruction)
-    {
-        _instruction = instruction;
-    }
-
-    public override string ToString()
-    {
-        return Enum.GetName(typeof(Mnemonic), _instruction) ?? "Unknown Instruction";
-    }
-}
-
-internal enum AssemblyDataType : byte
+enum AssemblyDataType : byte
 {
     Instruction,
     Operand
@@ -30,11 +13,11 @@ public struct AssemblyData
 {
     internal AssemblyDataType Type;
 
-    internal BetterInstruction Instruction;
+    internal Instruction Instruction;
 
     internal Register Operand;
 
-    public static implicit operator AssemblyData(BetterInstruction instruction) =>
+    public static implicit operator AssemblyData(Instruction instruction) =>
         new()
         {
             Type = AssemblyDataType.Instruction,
