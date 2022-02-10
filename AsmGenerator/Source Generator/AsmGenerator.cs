@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AsmGenerator.Source_Generator;
 
-//TODO Ensure two requests for the same assembly don't cause issues
 //TODO Ensure AddInstructions can be called multiple times for the same Assembler
 [Generator]
 public class AsmGenerator : ISourceGenerator
@@ -66,6 +65,8 @@ namespace AsmGenerator
     private static IEnumerable<AsmGenerationInfo> GetAsmGenerationInfo(Compilation compilation,
         List<SyntaxNode> assemblerParseCalls)
     {
+        HashSet<Guid> existingAssemblies = new();
+
         using MD5 md5 = MD5.Create();
 
         foreach (SyntaxNode assemblerParseCall in assemblerParseCalls)
@@ -111,9 +112,13 @@ namespace AsmGenerator
             // get a stable id for the code in a reasonably quick way
             string asmString = sbInstruction.ToString();
             byte[] asmHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
-            string asmGuid = new Guid(asmHash).ToString("N");
+            Guid asmGuid = new(asmHash);
 
-            yield return new AsmGenerationInfo(instructionData, asmGuid);
+            if (existingAssemblies.Contains(asmGuid)) continue;
+
+            existingAssemblies.Add(asmGuid);
+            string asmGuidString = asmGuid.ToString("N");
+            yield return new AsmGenerationInfo(instructionData, asmGuidString);
         }
     }
 
