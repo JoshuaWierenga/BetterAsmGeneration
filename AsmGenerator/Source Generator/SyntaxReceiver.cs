@@ -18,17 +18,11 @@ namespace AsmGenerator.Source_Generator
 
             if (syntaxNode is InvocationExpressionSyntax
                 {
+                    ArgumentList.Arguments.Count: > 0,
                     Expression: MemberAccessExpressionSyntax
                     {
-                        Name.Identifier.ValueText: "Parse",
+                        Name.Identifier.ValueText: "AddInstructions",
                         Expression: IdentifierNameSyntax
-                        {
-                            Identifier.ValueText: "Generator"
-                        }
-                        or MemberAccessExpressionSyntax
-                        {
-                            Name.Identifier.ValueText: "Generator"
-                        }
                     }
                 })
             {

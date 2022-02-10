@@ -1,12 +1,14 @@
 ﻿using AsmGenerator;
 using AsmToDelegate;
+using Iced.Intel;
 using static AsmGenerator.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    /*var asm = Generator.Parse
-    (64,
+    /*var asm = new Assembler(bitness: 64);
+    asm.AddInstructions
+    (
         mov, rax, rcx,
         add, rax, rdx,
         ret
@@ -22,8 +24,9 @@ unsafe
     var c = r8;
     var d = r9;
 
-    var asm2 = Generator.Parse
-    (64,
+    var asm2 = new Assembler(bitness: 64);
+    asm2.AddInstructions
+    (
         mov, rax, a,
         imul, rax, b,
         mov, rbx, c,
@@ -32,12 +35,13 @@ unsafe
         ret
     );
 
-    var addFunction2 = asm.ToFunctionPointerWinX64<long, long, long, long, long>();
+    var addFunction2 = asm2.ToFunctionPointerWinX64<long, long, long, long, long>();
     Debug.Assert(210L == addFunction2(5, 2, 10, 20));
-    Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + add(5, 2, 10, 20));*/
+    Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + addFunction2(5, 2, 10, 20));*/
 
-    var asm3 = Generator.Parse
-    (64,
+    var asm3 = new Assembler(bitness: 64);
+    asm3.AddInstructions
+    (
         rdtsc,
         shl, rdx, 32,
         add, rax, rdx,
