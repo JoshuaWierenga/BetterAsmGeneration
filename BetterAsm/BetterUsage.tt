@@ -9,10 +9,14 @@ public static class BetterAsmInstructions
 {
     <# foreach (int i in Enum.GetValues(typeof(Mnemonic)))
     { 
-        String instructionName = Enum.GetName(typeof(Mnemonic), i); #>
-public static readonly BetterInstruction <#= instructionName #> = new (Mnemonic.<#= instructionName #>);
-  
-    
+        String mnemonic = Enum.GetName(typeof(Mnemonic), i);
+        String instructionName = mnemonic.ToLower();
+        if (mnemonic == "In" || mnemonic == "Int" || mnemonic == "Out") 
+        {
+            instructionName = "@" + instructionName;
+        } #>
+public static readonly BetterInstruction <#= instructionName #> = new (Mnemonic.<#= mnemonic #>);
+
     <# }
     #>
 }
