@@ -21,7 +21,7 @@ namespace AsmGenerator
 {
     internal static class Generator
     {
-        public static Assembler Parse(params AssemblyData[] assembly)
+        public static Assembler Parse(int bitness, params AssemblyData[] assembly)
         {
             // This will be filled in by the generator once you call 
             throw new Exception(""This shouldn't be possible."");
@@ -69,12 +69,12 @@ namespace AsmGenerator
             InvocationExpressionSyntax invocation = (InvocationExpressionSyntax)assemblerParseCall;
             SemanticModel semanticModel = compilation.GetSemanticModel(invocation.ArgumentList.SyntaxTree);
 
-            List<Tuple<string, List<string>>> instructionData = new(); 
+            List<Tuple<string, List<string>>> instructionData = new();
 
             //TODO Remove
             //Debugger.Launch();
 
-            foreach (ArgumentSyntax argument in invocation.ArgumentList.Arguments)
+            foreach (ArgumentSyntax argument in invocation.ArgumentList.Arguments.Skip(1))
             {
                 ExpressionSyntax asmData = argument.Expression;
                 ITypeSymbol? typeSymbol = semanticModel.GetTypeInfo(asmData).Type;
@@ -121,8 +121,9 @@ namespace AsmGenerator
         foreach (AsmGenerationInfo asmGenerationInfo in asmGenerationInfos)
         {
             //TODO Write summary
+            //TODO Convert to extension method on Iced Assembler?
             sb.AppendLine($"{indent}// <summary> </summary>");
-            sb.AppendLine($"{indent}public static Assembler Parse(params AssemblyData[] assembly)");
+            sb.AppendLine($"{indent}public static Assembler Parse(int bitness, params AssemblyData[] assembly)");
             sb.AppendLine($"{indent}{{");
 
             GenerateAsmConverterMethodBody(context, sb, asmGenerationInfo, indent + "    ");
@@ -138,8 +139,8 @@ namespace AsmGenerator
 
     private static void GenerateAsmConverterMethodBody(GeneratorExecutionContext context, StringBuilder sb, AsmGenerationInfo asmGenerationInfo, string indent)
     {
-        sb.AppendLine($"{indent}Assembler assembler = new(64);");
-            
+        sb.AppendLine($"{indent}Assembler assembler = new(bitness);");
+
         foreach ((string? mnemonic, List<string>? operands) in asmGenerationInfo.InstructionLabels)
         {
             sb.AppendLine($"{indent}assembler.{mnemonic}({string.Join(", ", operands)});");

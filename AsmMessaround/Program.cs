@@ -6,7 +6,7 @@ using static Iced.Intel.AssemblerRegisters;
 unsafe
 {
     /*var asm = Generator.Parse
-    (
+    (64,
         mov, rax, rcx,
         add, rax, rdx,
         ret
@@ -23,7 +23,7 @@ unsafe
     var d = r9;
 
     var asm2 = Generator.Parse
-    (
+    (64,
         mov, rax, a,
         imul, rax, b,
         mov, rbx, c,
@@ -37,7 +37,7 @@ unsafe
     Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + add(5, 2, 10, 20));*/
 
     var asm3 = Generator.Parse
-    (
+    (64,
         rdtsc,
         shl, rdx, 32,
         add, rax, rdx,
