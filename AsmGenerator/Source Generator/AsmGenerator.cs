@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace AsmGenerator.Source_Generator;
 
-//TODO Ensure AddInstructions can be called multiple times for the same Assembler
 [Generator]
 public class AsmGenerator : ISourceGenerator
 {
@@ -44,10 +43,10 @@ namespace AsmGenerator
             throw new InvalidOperationException("We were given the wrong syntax receiver.");
         }
 
-        List<SyntaxNode> assemblerParseCalls = syntaxReceiver.AssemblerParseCalls;
+        List<ArgumentListSyntax> assemblerCallsArguments = syntaxReceiver.AssemblerParseCalls;
 
         IEnumerable<AsmGenerationInfo> asmGenerationInfos =
-            GetAsmGenerationInfo(context.Compilation, assemblerParseCalls);
+            GetAsmGenerationInfo(context.Compilation, assemblerCallsArguments);
 
         if (asmGenerationInfos.Any())
         {
@@ -63,17 +62,15 @@ namespace AsmGenerator
     }
 
     private static IEnumerable<AsmGenerationInfo> GetAsmGenerationInfo(Compilation compilation,
-        List<SyntaxNode> assemblerParseCalls)
+        List<ArgumentListSyntax> assemblerParseCalls)
     {
         HashSet<Guid> existingAssemblies = new();
 
         using MD5 md5 = MD5.Create();
 
-        foreach (SyntaxNode assemblerParseCall in assemblerParseCalls)
+        foreach (ArgumentListSyntax assemblerCallArguments in assemblerParseCalls)
         {
-            //TODO Use data outside of invocation.ArgumentList or just return that from SyntaxReceiver
-            InvocationExpressionSyntax invocation = (InvocationExpressionSyntax)assemblerParseCall;
-            SemanticModel semanticModel = compilation.GetSemanticModel(invocation.ArgumentList.SyntaxTree);
+            SemanticModel semanticModel = compilation.GetSemanticModel(assemblerCallArguments.SyntaxTree);
 
             List<Tuple<string, List<string>>> instructionData = new();
             StringBuilder sbInstruction = new();
@@ -81,7 +78,7 @@ namespace AsmGenerator
             //TODO Remove
             //Debugger.Launch();
 
-            foreach (ArgumentSyntax argument in invocation.ArgumentList.Arguments)
+            foreach (ArgumentSyntax argument in assemblerCallArguments.Arguments)
             {
                 ExpressionSyntax asmData = argument.Expression;
                 ITypeSymbol? typeSymbol = semanticModel.GetTypeInfo(asmData).Type;

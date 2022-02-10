@@ -6,13 +6,16 @@ namespace AsmGenerator.Source_Generator;
 
 internal class SyntaxReceiver : ISyntaxReceiver
 {
-    public List<SyntaxNode> AssemblerParseCalls { get; } = new();
+    public List<ArgumentListSyntax> AssemblerParseCalls { get; } = new();
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {
         if (syntaxNode is InvocationExpressionSyntax
             {
-                ArgumentList.Arguments.Count: > 0,
+                ArgumentList:
+                {
+                    Arguments.Count: > 0
+                } arguments,
                 Expression: MemberAccessExpressionSyntax
                 {
                     Name.Identifier.ValueText: "AddInstructions",
@@ -20,7 +23,7 @@ internal class SyntaxReceiver : ISyntaxReceiver
                 }
             })
         {
-            AssemblerParseCalls.Add(syntaxNode);
+            AssemblerParseCalls.Add(arguments);
         }
     }
 }
