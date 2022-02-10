@@ -36,8 +36,7 @@ unsafe
     Debug.Assert(210L == addFunction2(5, 2, 10, 20));
     Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + add(5, 2, 10, 20));*/
 
-    //TODO Support constants in generated Assembler
-    var asm3 = AsmGenerator.CompileTimeBetterInstructionCollection.Parse
+    var asm3 = CompileTimeBetterInstructionCollection.Parse
     (
         rdtsc,
         shl, rdx, 32,

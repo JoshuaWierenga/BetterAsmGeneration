@@ -21,7 +21,11 @@ namespace AsmGenerator.Source_Generator
                     Expression: MemberAccessExpressionSyntax
                     {
                         Name.Identifier.ValueText: "Parse",
-                        Expression: MemberAccessExpressionSyntax
+                        Expression: IdentifierNameSyntax
+                        {
+                            Identifier.ValueText: "CompileTimeBetterInstructionCollection"
+                        }
+                        or MemberAccessExpressionSyntax
                         {
                             Name.Identifier.ValueText: "CompileTimeBetterInstructionCollection"
                         }

@@ -17,6 +17,7 @@ internal enum AssemblyDataType : byte
     ImmediateU64,
 }
 
+//TODO Support memory and vectors
 public struct AssemblyData
 {
     internal AssemblyDataType Type;
