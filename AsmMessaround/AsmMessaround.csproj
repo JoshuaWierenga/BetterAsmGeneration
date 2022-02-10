@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AsmToDelegate" Version="0.0.2-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AsmGenerator\AsmGenerator.csproj" OutputItemType="Analyzer" />
-    <ProjectReference Include="..\AsmToDelegate\AsmToDelegate.csproj" />
   </ItemGroup>
 
 </Project>
