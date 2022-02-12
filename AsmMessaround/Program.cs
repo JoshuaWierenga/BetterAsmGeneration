@@ -19,14 +19,16 @@ unsafe
     Debug.Assert(44ul == addFunction(31, 13));
     Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));
 
-    //TODO Support variables
-    /*var a = rcx;
-    var b = rdx;
-    var c = r8;
-    var d = r9;
+    AssemblerRegister64 a, b, c, d;
 
     var asm2 = new Assembler(bitness: 64);
-    asm2.AddInstructions
+    asm2.AddVariables
+    (
+        a = rcx,
+        b = rdx,
+        c = r8,
+        d = r9
+    ).AddInstructions
     (
         mov, rax, a,
         imul, rax, b,
@@ -38,7 +40,7 @@ unsafe
 
     var addFunction2 = asm2.ToFunctionPointerWinX64<long, long, long, long, long>();
     Debug.Assert(210L == addFunction2(5, 2, 10, 20));
-    Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + addFunction2(5, 2, 10, 20));*/
+    Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + addFunction2(5, 2, 10, 20));
 
     var asm3 = new Assembler(bitness: 64);
     asm3.AddInstructions

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -141,13 +143,25 @@ public struct AssemblyData
         };
     }
 
-    public static string GetGuid(IEnumerable<AssemblyData> data)
+    public static string GetGuid(IEnumerable<AssemblyData> data, IEnumerable<int>? ignoreIndices = null)
     {
         StringBuilder sb = new();
 
-        foreach (AssemblyData token in data)
+        using IEnumerator<AssemblyData> dataEnumerator = data.GetEnumerator();
+        using IEnumerator<int>? indexEnumerator = ignoreIndices?.GetEnumerator();
+        bool stillRemoving = true;
+
+        indexEnumerator?.MoveNext();
+        for(int i = 0; dataEnumerator.MoveNext(); i++)
         {
-            sb.Append(token.ToString().ToLower());
+            if (stillRemoving && i == indexEnumerator?.Current)
+            {
+                stillRemoving = indexEnumerator.MoveNext();
+            }
+            else
+            {
+                sb.Append(dataEnumerator.Current.ToString().ToLower());
+            }
         }
 
         using MD5 md5 = MD5.Create();

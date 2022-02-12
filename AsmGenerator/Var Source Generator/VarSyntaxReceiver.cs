@@ -1,15 +1,21 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AsmGenerator.Source_Generator;
+namespace AsmGenerator.Var_Source_Generator;
 
-internal class SyntaxReceiver : ISyntaxReceiver
+internal class VarSyntaxReceiver : ISyntaxReceiver
 {
-    public List<ArgumentListSyntax> AssemblerParseCalls { get; } = new();
+    public List<ArgumentListSyntax> VariableCalls { get; } = new();
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {
+        //TODO Support more than one call
+        if (VariableCalls.Count > 0)
+        {
+            return;
+        }
+
         if (syntaxNode is InvocationExpressionSyntax
             {
                 ArgumentList:
@@ -18,12 +24,12 @@ internal class SyntaxReceiver : ISyntaxReceiver
                 } arguments,
                 Expression: MemberAccessExpressionSyntax
                 {
-                    Name.Identifier.ValueText: "AddInstructions",
+                    Name.Identifier.ValueText: "AddVariables",
                     Expression: IdentifierNameSyntax
                 }
             })
         {
-            AssemblerParseCalls.Add(arguments);
+            VariableCalls.Add(arguments);
         }
     }
 }
