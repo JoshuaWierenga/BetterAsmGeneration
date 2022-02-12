@@ -192,7 +192,7 @@ namespace AsmGenerator
 
         foreach (AssemblyInfo asmGenerationInfo in assemblerInfos)
         {
-            sb.AppendLine($"case \"{asmGenerationInfo.Guid}\":");
+            sb.AppendLine($"{indent}case \"{asmGenerationInfo.Guid}\":");
             sb.AppendLine($"{innerIndent}Instructions{asmGenerationInfo.Guid}(assembler);");
             sb.AppendLine($"{innerIndent}break;");
         }
