@@ -1,7 +1,8 @@
-﻿using System.Diagnostics;
-using AsmGenerator;
+﻿using AsmGenerator;
 using AsmToDelegate;
 using Iced.Intel;
+using System;
+using System.Diagnostics;
 using static AsmGenerator.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 

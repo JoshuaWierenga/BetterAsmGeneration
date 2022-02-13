@@ -178,6 +178,7 @@ public struct AssemblyData
         };
     }
 
+    //TODO Revert changes to this file, ignoreIndices is no longer required
     public static string GetGuid(IEnumerable<AssemblyData> data, IEnumerable<int>? ignoreIndices = null)
     {
         StringBuilder sb = new();
