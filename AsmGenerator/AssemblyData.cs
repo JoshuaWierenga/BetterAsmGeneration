@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,7 +10,7 @@ namespace AsmGenerator;
 internal enum AssemblyDataType : byte
 {
     Instruction,
-    Operand,
+    Register,
     ImmediateS8,
     ImmediateU8,
     ImmediateS16,
@@ -22,14 +21,15 @@ internal enum AssemblyDataType : byte
     ImmediateU64,
 }
 
-//TODO Support memory and vectors
+//TODO Generate with a template?
+//TODO Support memory
 public struct AssemblyData
 {
     internal AssemblyDataType Type;
 
     internal Instruction Instruction;
 
-    internal Register Operand;
+    internal Register Register;
 
     //TODO Remove and just use a ulong with unchecked casts?
     internal IntegerWrapper Immediate;
@@ -44,29 +44,64 @@ public struct AssemblyData
     public static implicit operator AssemblyData(AssemblerRegister8 r8) =>
         new()
         {
-            Type = AssemblyDataType.Operand,
-            Operand = r8
+            Type = AssemblyDataType.Register,
+            Register = r8
         };
 
     public static implicit operator AssemblyData(AssemblerRegister16 r16) =>
         new()
         {
-            Type = AssemblyDataType.Operand,
-            Operand = r16
+            Type = AssemblyDataType.Register,
+            Register = r16
         };
 
     public static implicit operator AssemblyData(AssemblerRegister32 r32) =>
         new()
         {
-            Type = AssemblyDataType.Operand,
-            Operand = r32
+            Type = AssemblyDataType.Register,
+            Register = r32
         };
 
     public static implicit operator AssemblyData(AssemblerRegister64 r64) =>
         new()
         {
-            Type = AssemblyDataType.Operand,
-            Operand = r64
+            Type = AssemblyDataType.Register,
+            Register = r64
+        };
+
+    public static implicit operator AssemblyData(AssemblerRegisterST rFP) =>
+        new()
+        {
+            Type = AssemblyDataType.Register,
+            Register = rFP
+        };
+
+    public static implicit operator AssemblyData(AssemblerRegisterMM rMMX) =>
+        new()
+        {
+            Type = AssemblyDataType.Register,
+            Register = rMMX
+        };
+
+    public static implicit operator AssemblyData(AssemblerRegisterXMM rXMM) =>
+        new()
+        {
+            Type = AssemblyDataType.Register,
+            Register = rXMM
+        };
+
+    public static implicit operator AssemblyData(AssemblerRegisterYMM rYMM) =>
+        new()
+        {
+            Type = AssemblyDataType.Register,
+            Register = rYMM
+        };
+
+    public static implicit operator AssemblyData(AssemblerRegisterZMM rZMM) =>
+        new()
+        {
+            Type = AssemblyDataType.Register,
+            Register = rZMM
         };
 
     public static implicit operator AssemblyData(sbyte immS8) =>
@@ -130,7 +165,7 @@ public struct AssemblyData
         return Type switch
         {
             AssemblyDataType.Instruction => Instruction.ToString(),
-            AssemblyDataType.Operand => Operand.ToString(),
+            AssemblyDataType.Register => Register.ToString(),
             AssemblyDataType.ImmediateS8 => Immediate.intS8.ToString(),
             AssemblyDataType.ImmediateU8 => Immediate.intU8.ToString(),
             AssemblyDataType.ImmediateS16 => Immediate.intS16.ToString(),

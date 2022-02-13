@@ -8,9 +8,15 @@ internal enum VariableDataType
     Register8,
     Register16,
     Register32,
-    Register64
+    Register64,
+    RegisterFP,
+    RegisterMMX,
+    RegisterXMM,
+    RegisterYMM,
+    RegisterZMM
 }
 
+//TODO Generate with a template?
 public class VariableData
 {
     internal VariableDataType Type;
@@ -19,6 +25,11 @@ public class VariableData
     internal AssemblerRegister16 R16;
     internal AssemblerRegister32 R32;
     internal AssemblerRegister64 R64;
+    internal AssemblerRegisterST RFP;
+    internal AssemblerRegisterMM RMMX;
+    internal AssemblerRegisterXMM RXMM;
+    internal AssemblerRegisterYMM RYMM;
+    internal AssemblerRegisterZMM RZMM;
 
 
     public static implicit operator VariableData(AssemblerRegister8 r8) =>
@@ -47,6 +58,41 @@ public class VariableData
         {
             Type = VariableDataType.Register64,
             R64 = r64
+        };
+
+    public static implicit operator VariableData(AssemblerRegisterST rFP) =>
+        new()
+        {
+            Type = VariableDataType.RegisterFP,
+            RFP = rFP
+        };
+
+    public static implicit operator VariableData(AssemblerRegisterMM rMMX) =>
+        new()
+        {
+            Type = VariableDataType.RegisterMMX,
+            RMMX = rMMX
+        };
+
+    public static implicit operator VariableData(AssemblerRegisterXMM rXMM) =>
+        new()
+        {
+            Type = VariableDataType.RegisterXMM,
+            RXMM = rXMM
+        };
+
+    public static implicit operator VariableData(AssemblerRegisterYMM rYMM) =>
+        new()
+        {
+            Type = VariableDataType.RegisterYMM,
+            RYMM = rYMM
+        };
+
+    public static implicit operator VariableData(AssemblerRegisterZMM rZMM) =>
+        new()
+        {
+            Type = VariableDataType.RegisterZMM,
+            RZMM = rZMM
         };
 
 
@@ -88,6 +134,61 @@ public class VariableData
         if (data.Type == VariableDataType.Register64)
         {
             return data.R64;
+        }
+
+        //TODO Improve
+        throw new Exception();
+    }
+
+    public static implicit operator AssemblerRegisterST(VariableData data)
+    {
+        if (data.Type == VariableDataType.RegisterFP)
+        {
+            return data.RFP;
+        }
+
+        //TODO Improve
+        throw new Exception();
+    }
+
+    public static implicit operator AssemblerRegisterMM(VariableData data)
+    {
+        if (data.Type == VariableDataType.RegisterMMX)
+        {
+            return data.RMMX;
+        }
+
+        //TODO Improve
+        throw new Exception();
+    }
+
+    public static implicit operator AssemblerRegisterXMM(VariableData data)
+    {
+        if (data.Type == VariableDataType.RegisterXMM)
+        {
+            return data.RXMM;
+        }
+
+        //TODO Improve
+        throw new Exception();
+    }
+
+    public static implicit operator AssemblerRegisterYMM(VariableData data)
+    {
+        if (data.Type == VariableDataType.RegisterYMM)
+        {
+            return data.RYMM;
+        }
+
+        //TODO Improve
+        throw new Exception();
+    }
+
+    public static implicit operator AssemblerRegisterZMM(VariableData data)
+    {
+        if (data.Type == VariableDataType.RegisterZMM)
+        {
+            return data.RZMM;
         }
 
         //TODO Improve
