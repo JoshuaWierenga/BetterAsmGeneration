@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
@@ -47,7 +47,7 @@ internal class AsmGenerator : ISourceGenerator
         {
             SemanticModel semanticModel = compilation.GetSemanticModel(assemblerCallArguments.SyntaxTree);
 
-            VariableInfo? variablesInfo = null;
+            IReadOnlyList<(string variable, string register)>? variablesInfo = null;
             if (variablesCallArguments != null)
             {
                 variablesInfo = GetVariablesCallInfo(variablesCallArguments);
@@ -75,7 +75,7 @@ internal class AsmGenerator : ISourceGenerator
                     } && instructionData.Count > 0:
                         string operandLabel = identifier.Identifier.ValueText.ToLower();
                         (string variable, string register)? match =
-                            variablesInfo?.Variables.LastOrDefault(v => v.variable == operandLabel);
+                            variablesInfo?.LastOrDefault(v => v.variable == operandLabel);
                         if (match is { register: { } })
                         {
                             operandLabel = match.Value.register;
@@ -112,7 +112,8 @@ internal class AsmGenerator : ISourceGenerator
         return assemblyInfos;
     }
 
-    private static VariableInfo GetVariablesCallInfo(BaseArgumentListSyntax variablesCallArguments)
+    private static IReadOnlyList<(string variable, string register)> GetVariablesCallInfo(
+        BaseArgumentListSyntax variablesCallArguments)
     {
         IEnumerable<(string variable, string register)> variables =
             from argument in variablesCallArguments.Arguments
@@ -120,7 +121,7 @@ internal class AsmGenerator : ISourceGenerator
             into splitArgumentString
             select (splitArgumentString[0], splitArgumentString[1]);
 
-        return new VariableInfo(variables.ToList());
+        return variables.ToList();
     }
 
     private static void GenerateAsmFunctions(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblyInfos)

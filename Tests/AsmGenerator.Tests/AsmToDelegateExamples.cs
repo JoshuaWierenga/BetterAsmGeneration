@@ -1,12 +1,11 @@
 using System;
-using AsmGenerator;
 using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static AsmGenerator.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
-namespace AsmGeneratorTests;
+namespace AsmGenerator.Tests;
 
 [TestClass]
 public unsafe class AsmToDelegateExamples
