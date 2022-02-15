@@ -60,6 +60,7 @@ internal class AsmGenerator : ISourceGenerator
             {
                 ExpressionSyntax asmData = argument.Expression;
                 ITypeSymbol? typeSymbol = ModelExtensions.GetTypeInfo(semanticModel, asmData).Type;
+
                 switch (asmData)
                 {
                     case IdentifierNameSyntax identifier when typeSymbol?.Name == "Instruction":
@@ -67,11 +68,11 @@ internal class AsmGenerator : ISourceGenerator
                         instructionData.Add((instructionLabel, new List<string>()));
                         sbInstruction.Append(instructionLabel);
                         break;
-                    //TODO Support Memory
                     case IdentifierNameSyntax identifier when typeSymbol is
                     {
                         Name: "AssemblerRegister8" or "AssemblerRegister16" or "AssemblerRegister32"
-                        or "AssemblerRegister64"
+                        or "AssemblerRegister64" or "AssemblerRegisterXMM" or "AssemblerRegisterYMM"
+                        or "AssemblerRegisterZMM"
                     } && instructionData.Count > 0:
                         string operandLabel = identifier.Identifier.ValueText.ToLower();
                         (string variable, string register)? match =
@@ -84,6 +85,15 @@ internal class AsmGenerator : ISourceGenerator
                         instructionData.Last().operands.Add(operandLabel);
                         sbInstruction.Append(operandLabel);
 
+                        break;
+                    //TODO Fully support Memory and support in combination with variables
+                    case ElementAccessExpressionSyntax element when typeSymbol is
+                    {
+                        Name: "AssemblerMemoryOperand"
+                    } && instructionData.Count > 0:
+                        string memoryOperand = element.ToFullString();
+                        instructionData.Last().operands.Add(memoryOperand);
+                        sbInstruction.Append(memoryOperand);
                         break;
                     case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.NumericLiteralExpression) &&
                                                               instructionData.Count > 0:

@@ -11,6 +11,7 @@ internal enum AssemblyDataType : byte
 {
     Instruction,
     Register,
+    Memory,
     ImmediateS8,
     ImmediateU8,
     ImmediateS16,
@@ -18,162 +19,172 @@ internal enum AssemblyDataType : byte
     ImmediateS32,
     ImmediateU32,
     ImmediateS64,
-    ImmediateU64,
+    ImmediateU64
 }
 
 //TODO Generate with a template?
-//TODO Support memory
+//TODO Fully support memory
 public struct AssemblyData
 {
-    internal AssemblyDataType Type;
+    private AssemblyDataType _type;
 
-    internal Instruction Instruction;
+    private Instruction _instruction;
 
-    internal Register Register;
+    private Register _register;
+
+    private AssemblerMemoryOperand _memory;
 
     //TODO Remove and just use a ulong with unchecked casts?
-    internal IntegerWrapper Immediate;
+    private IntegerWrapper _immediate;
 
     public static implicit operator AssemblyData(Instruction instruction) =>
         new()
         {
-            Type = AssemblyDataType.Instruction,
-            Instruction = instruction
+            _type = AssemblyDataType.Instruction,
+            _instruction = instruction
         };
 
     public static implicit operator AssemblyData(AssemblerRegister8 r8) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = r8
+            _type = AssemblyDataType.Register,
+            _register = r8
         };
 
     public static implicit operator AssemblyData(AssemblerRegister16 r16) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = r16
+            _type = AssemblyDataType.Register,
+            _register = r16
         };
 
     public static implicit operator AssemblyData(AssemblerRegister32 r32) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = r32
+            _type = AssemblyDataType.Register,
+            _register = r32
         };
 
     public static implicit operator AssemblyData(AssemblerRegister64 r64) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = r64
+            _type = AssemblyDataType.Register,
+            _register = r64
         };
 
     public static implicit operator AssemblyData(AssemblerRegisterST rFP) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = rFP
+            _type = AssemblyDataType.Register,
+            _register = rFP
         };
 
     public static implicit operator AssemblyData(AssemblerRegisterMM rMMX) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = rMMX
+            _type = AssemblyDataType.Register,
+            _register = rMMX
         };
 
     public static implicit operator AssemblyData(AssemblerRegisterXMM rXMM) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = rXMM
+            _type = AssemblyDataType.Register,
+            _register = rXMM
         };
 
     public static implicit operator AssemblyData(AssemblerRegisterYMM rYMM) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = rYMM
+            _type = AssemblyDataType.Register,
+            _register = rYMM
         };
 
     public static implicit operator AssemblyData(AssemblerRegisterZMM rZMM) =>
         new()
         {
-            Type = AssemblyDataType.Register,
-            Register = rZMM
+            _type = AssemblyDataType.Register,
+            _register = rZMM
+        };
+
+    public static implicit operator AssemblyData(AssemblerMemoryOperand memory) =>
+        new()
+        {
+            _type = AssemblyDataType.Memory,
+            _memory = memory
         };
 
     public static implicit operator AssemblyData(sbyte immS8) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateS8,
-            Immediate = new IntegerWrapper(immS8)
+            _type = AssemblyDataType.ImmediateS8,
+            _immediate = new IntegerWrapper(immS8)
         };
 
     public static implicit operator AssemblyData(byte immU8) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateU8,
-            Immediate = new IntegerWrapper(immU8)
+            _type = AssemblyDataType.ImmediateU8,
+            _immediate = new IntegerWrapper(immU8)
         };
 
     public static implicit operator AssemblyData(short immS16) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateS16,
-            Immediate = new IntegerWrapper(immS16)
+            _type = AssemblyDataType.ImmediateS16,
+            _immediate = new IntegerWrapper(immS16)
         };
 
     public static implicit operator AssemblyData(ushort immU16) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateU16,
-            Immediate = new IntegerWrapper(immU16)
+            _type = AssemblyDataType.ImmediateU16,
+            _immediate = new IntegerWrapper(immU16)
         };
 
     public static implicit operator AssemblyData(int immS32) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateS32,
-            Immediate = new IntegerWrapper(immS32)
+            _type = AssemblyDataType.ImmediateS32,
+            _immediate = new IntegerWrapper(immS32)
         };
 
     public static implicit operator AssemblyData(uint immU32) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateU32,
-            Immediate = new IntegerWrapper(immU32)
+            _type = AssemblyDataType.ImmediateU32,
+            _immediate = new IntegerWrapper(immU32)
         };
 
     public static implicit operator AssemblyData(long immS64) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateS64,
-            Immediate = new IntegerWrapper(immS64)
+            _type = AssemblyDataType.ImmediateS64,
+            _immediate = new IntegerWrapper(immS64)
         };
 
     public static implicit operator AssemblyData(ulong immU64) =>
         new()
         {
-            Type = AssemblyDataType.ImmediateU64,
-            Immediate = new IntegerWrapper(immU64)
+            _type = AssemblyDataType.ImmediateU64,
+            _immediate = new IntegerWrapper(immU64)
         };
 
     public override string ToString()
     {
-        return Type switch
+        return _type switch
         {
-            AssemblyDataType.Instruction => Instruction.ToString(),
-            AssemblyDataType.Register => Register.ToString(),
-            AssemblyDataType.ImmediateS8 => Immediate.intS8.ToString(),
-            AssemblyDataType.ImmediateU8 => Immediate.intU8.ToString(),
-            AssemblyDataType.ImmediateS16 => Immediate.intS16.ToString(),
-            AssemblyDataType.ImmediateU16 => Immediate.intU16.ToString(),
-            AssemblyDataType.ImmediateS32 => Immediate.intS32.ToString(),
-            AssemblyDataType.ImmediateU32 => Immediate.intU32.ToString(),
-            AssemblyDataType.ImmediateS64 => Immediate.intS64.ToString(),
-            AssemblyDataType.ImmediateU64 => Immediate.intU64.ToString(),
+            AssemblyDataType.Instruction => _instruction.ToString(),
+            AssemblyDataType.Register => _register.ToString(),
+            AssemblyDataType.Memory => _memory.ToString(),
+            AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
+            AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
+            AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),
+            AssemblyDataType.ImmediateU16 => _immediate.intU16.ToString(),
+            AssemblyDataType.ImmediateS32 => _immediate.intS32.ToString(),
+            AssemblyDataType.ImmediateU32 => _immediate.intU32.ToString(),
+            AssemblyDataType.ImmediateS64 => _immediate.intS64.ToString(),
+            AssemblyDataType.ImmediateU64 => _immediate.intU64.ToString(),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
