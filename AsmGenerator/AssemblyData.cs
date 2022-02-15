@@ -176,7 +176,7 @@ public struct AssemblyData
         {
             AssemblyDataType.Instruction => _instruction.ToString(),
             AssemblyDataType.Register => _register.ToString(),
-            AssemblyDataType.Memory => _memory.ToString(),
+            AssemblyDataType.Memory => $"__[{_memory.Base.ToString().ToLower()}]",
             AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
             AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
             AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),
