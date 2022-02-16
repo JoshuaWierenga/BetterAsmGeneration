@@ -3672,4 +3672,5 @@ public static class Instructions
 
     public static readonly Instruction vsubrps = new (Mnemonic.Vsubrps);
 
-    }
+    public static readonly Instruction EmitLabel = new (true);
+}

@@ -4,15 +4,18 @@ namespace AsmGenerator.Source_Generator;
 
 internal class AssemblyInfo
 {
-    internal readonly IReadOnlyList<(string mnemonic, List<string> operands)> InstructionData;
     internal readonly string Guid;
-    internal readonly IReadOnlyList<(string variable, string register)>? VariableInfo;
 
-    public AssemblyInfo(IReadOnlyList<(string mnemonic, List<string> operands)> instructionData, string guid,
-        IReadOnlyList<(string variable, string register)>? variablesInfo)
+    internal readonly IReadOnlyList<(string mnemonic, List<string> operands)> Instructions;
+    internal readonly IReadOnlyCollection<string> Labels;
+
+    public AssemblyInfo(string guid,
+        IReadOnlyList<(string mnemonic, List<string> operands)> instructionData,
+        IReadOnlyCollection<string> labelData)
     {
-        InstructionData = instructionData;
         Guid = guid;
-        VariableInfo = variablesInfo;
+
+        Instructions = instructionData;
+        Labels = labelData;
     }
 }

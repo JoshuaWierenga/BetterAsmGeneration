@@ -20,4 +20,5 @@ public static readonly Instruction <#= instructionName #> = new (Mnemonic.<#= mn
 
     <# }
     #>
+public static readonly Instruction EmitLabel = new (true);
 }

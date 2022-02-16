@@ -47,13 +47,14 @@ internal class AsmGenerator : ISourceGenerator
         {
             SemanticModel semanticModel = compilation.GetSemanticModel(assemblerCallArguments.SyntaxTree);
 
-            IReadOnlyList<(string variable, string register)>? variablesInfo = null;
+            IReadOnlyList<(string variable, string register)>? variables = null;
             if (variablesCallArguments != null)
             {
-                variablesInfo = GetVariablesCallInfo(variablesCallArguments);
+                variables = GetVariablesCallInfo(variablesCallArguments);
             }
 
-            List<(string mnemonic, List<string> operands)> instructionData = new();
+            List<(string mnemonic, List<string> operands)> instructions = new();
+            HashSet<string> labels = new();
             StringBuilder sbInstruction = new();
 
             foreach (ArgumentSyntax argument in assemblerCallArguments.Arguments)
@@ -63,42 +64,63 @@ internal class AsmGenerator : ISourceGenerator
 
                 switch (asmData)
                 {
+                    //Instruction Mnemonic
                     case IdentifierNameSyntax identifier when typeSymbol?.Name == "Instruction":
                         string instructionLabel = identifier.Identifier.ValueText.ToLower();
-                        instructionData.Add((instructionLabel, new List<string>()));
-                        sbInstruction.Append(instructionLabel);
+
+                        if (instructionLabel == "emitlabel")
+                        {
+                            instructions.Add(("Label", new List<string>()));
+                            sbInstruction.Append("emit label");
+                        }
+                        else
+                        {
+                            instructions.Add((instructionLabel, new List<string>()));
+                            sbInstruction.Append(instructionLabel);
+                        }
                         break;
+                    //Register
                     case IdentifierNameSyntax identifier when typeSymbol is
                     {
                         Name: "AssemblerRegister8" or "AssemblerRegister16" or "AssemblerRegister32"
                         or "AssemblerRegister64" or "AssemblerRegisterXMM" or "AssemblerRegisterYMM"
                         or "AssemblerRegisterZMM"
-                    } && instructionData.Count > 0:
+                    } && instructions.Count > 0:
                         string operandLabel = identifier.Identifier.ValueText.ToLower();
                         (string variable, string register)? match =
-                            variablesInfo?.LastOrDefault(v => v.variable == operandLabel);
+                            variables?.LastOrDefault(v => v.variable == operandLabel);
                         if (match is { register: { } })
                         {
                             operandLabel = match.Value.register;
                         }
 
-                        instructionData.Last().operands.Add(operandLabel);
+                        instructions.Last().operands.Add(operandLabel);
                         sbInstruction.Append(operandLabel);
 
                         break;
                     //TODO Fully support Memory and support in combination with variables
+                    //Memory Access
                     case ElementAccessExpressionSyntax element when typeSymbol is
                     {
                         Name: "AssemblerMemoryOperand"
-                    } && instructionData.Count > 0:
+                    } && instructions.Count > 0:
                         string memoryOperand = element.ToFullString();
-                        instructionData.Last().operands.Add(memoryOperand);
+                        instructions.Last().operands.Add(memoryOperand);
                         sbInstruction.Append(memoryOperand);
                         break;
+                    //Label
+                    case IdentifierNameSyntax label when typeSymbol?.Name == "Label":
+                        string labelName = label.Identifier.ValueText;
+                        instructions.Last().operands.Add(labelName);
+                        labels.Add(labelName);
+                        sbInstruction.Append(labelName);
+                        break;
+                    //TODO Support floating point, check how assembly normally handles them
+                    //Number
                     case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.NumericLiteralExpression) &&
-                                                              instructionData.Count > 0:
+                                                              instructions.Count > 0:
                         string literalValue = literal.Token.ValueText;
-                        instructionData.Last().operands.Add(literalValue);
+                        instructions.Last().operands.Add(literalValue);
                         sbInstruction.Append(literalValue);
                         break;
                     default:
@@ -116,7 +138,7 @@ internal class AsmGenerator : ISourceGenerator
 
             existingAssemblies.Add(asmGuid);
             string asmGuidString = asmGuid.ToString("N");
-            assemblyInfos.Add(new AssemblyInfo(instructionData, asmGuidString, variablesInfo));
+            assemblyInfos.Add(new AssemblyInfo(asmGuidString, instructions, labels));
         }
 
         return assemblyInfos;
@@ -225,9 +247,20 @@ namespace AsmGenerator
 
     private static void GenerateAsmConverterMethodBody(StringBuilder sb, AssemblyInfo assemblyInfo, string indent)
     {
-        foreach ((string? mnemonic, List<string>? operands) in assemblyInfo.InstructionData)
+        //TODO Used provided variable, is that possible due to the lack of ref?
+        foreach (string label in assemblyInfo.Labels)
         {
-            sb.AppendLine($"{indent}assembler.{mnemonic}({string.Join(", ", operands)});");
+            sb.AppendLine($"{indent}Label {label} = assembler.CreateLabel();");
+        }
+
+        sb.AppendLine();
+
+        foreach ((string mnemonic, List<string> operands) in assemblyInfo.Instructions)
+        {
+            //TODO Find a better way to do this
+            string labelRef = mnemonic == "Label" ? "ref " : "";
+
+            sb.AppendLine($"{indent}assembler.{mnemonic}({labelRef}{string.Join(", ", operands)});");
         }
     }
 }

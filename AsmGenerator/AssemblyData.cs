@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -12,6 +12,7 @@ internal enum AssemblyDataType : byte
     Instruction,
     Register,
     Memory,
+    Label,
     ImmediateS8,
     ImmediateU8,
     ImmediateS16,
@@ -33,6 +34,8 @@ public struct AssemblyData
     private Register _register;
 
     private AssemblerMemoryOperand _memory;
+
+    private Label _label;
 
     //TODO Remove and just use a ulong with unchecked casts?
     private IntegerWrapper _immediate;
@@ -114,6 +117,13 @@ public struct AssemblyData
             _memory = memory
         };
 
+    public static implicit operator AssemblyData(Label label) =>
+        new()
+        {
+            _type = AssemblyDataType.Label,
+            _label = label
+        };
+
     public static implicit operator AssemblyData(sbyte immS8) =>
         new()
         {
@@ -177,6 +187,10 @@ public struct AssemblyData
             AssemblyDataType.Instruction => _instruction.ToString(),
             AssemblyDataType.Register => _register.ToString(),
             AssemblyDataType.Memory => $"__[{_memory.Base.ToString().ToLower()}]",
+            //Can't use range as its not in .net standard 2.0
+#pragma warning disable IDE0057 // Use range operator
+            AssemblyDataType.Label => _label.Name.Substring(3),
+#pragma warning restore IDE0057 // Use range operator
             AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
             AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
             AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),

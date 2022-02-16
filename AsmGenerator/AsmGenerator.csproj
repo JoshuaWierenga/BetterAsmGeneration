@@ -8,7 +8,7 @@
 
 	<ItemGroup>
 		<Content Include="Instructions.tt">
-			<LastGenOutput>BetterUsage.cs</LastGenOutput>
+			<LastGenOutput>Instructions.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
 		</Content>
 		<Compile Update="Instructions.cs">

@@ -1,4 +1,5 @@
-﻿using AsmToDelegate;
+﻿using AsmGenerator;
+using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -44,5 +45,40 @@ public unsafe class VectorTests
 
         vectorAdd(iLower, iUpper, iResult);
         Assert.AreEqual(Sse2.Add(lower, upper), result);
+    }
+
+    //From https://github.com/lazear/assembly/blob/d1baab8/vectors.asm#L81-L92
+    [TestMethod]
+    public void See3MagnitudeTest()
+    {
+        Vector128<float> input = Vector128.Create(1.0f, 2.0f, 3.0f, 4.0f);
+        Vector128<float> asmResult = Vector128<float>.Zero;
+
+        Vector128<float> cSharpResult = Sse.Multiply(input, input);
+        cSharpResult = Sse3.HorizontalAdd(cSharpResult, cSharpResult);
+        cSharpResult = Sse3.HorizontalAdd(cSharpResult, cSharpResult);
+        cSharpResult = Sse.Sqrt(cSharpResult);
+
+        void* pInput = Unsafe.AsPointer(ref input);
+        void* pResult = Unsafe.AsPointer(ref asmResult);
+        IntPtr iInput = new(pInput);
+        IntPtr iResult = new(pResult);
+
+        Assembler asmVec = new(64);
+        asmVec.AddInstructions(
+            movaps, xmm0, __[rcx],
+            mulps, xmm0, xmm0,
+            haddps, xmm0, xmm0,
+            haddps, xmm0, xmm0,
+            sqrtps, xmm0, xmm0,
+            movaps, __[rdx], xmm0,
+            ret
+        );
+
+        var vectorMagnitude =
+            asmVec.ToFunctionPointerWinX64<IntPtr, IntPtr, byte>();
+
+        vectorMagnitude(iInput, iResult);
+        Assert.AreEqual(cSharpResult, asmResult);
     }
 }
