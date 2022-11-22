@@ -1,0 +1,6 @@
+[submodule "TextmateLanguages/x86_64-assembly-vscode"]
+	path = TextmateLanguages/x86_64-assembly-vscode
+	url = https://github.com/13xforever/x86_64-assembly-vscode
+[submodule "TextmateLanguages/csharp-tmLanguage"]
+	path = TextmateLanguages/csharp-tmLanguage
+	url = https://github.com/dotnet/csharp-tmLanguage
