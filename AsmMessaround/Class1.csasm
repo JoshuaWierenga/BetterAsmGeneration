@@ -4,17 +4,16 @@ public class Class1
 {
 	public Class1()
     {
-
         // Has highlighting
         string test = /* language=asm */ """
 section .text
-    push eax      
+    push eax
 """;
 
         // Does not
         string test2 = """
 section .text
-    push eax      
+    push eax
 """;
     }
 }

@@ -46,11 +46,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- This is unavailable at this point for some reason so need to set it manually. -->
-    <IntermediateOutputPath>$(MSBuildProjectDirectory)\obj\$(Configuration)\</IntermediateOutputPath>
-  
     <CSharpGrammar>..\TextmateLanguages\csharp-tmLanguage\grammars\csharp.tmLanguage</CSharpGrammar>
-    <CSharpAsmGrammar>$(IntermediateOutputPath)csharp.asm.tmLanguage</CSharpAsmGrammar>
+    <CSharpAsmGrammar>grammars\generated.csharp.asm.tmLanguage</CSharpAsmGrammar>
   </PropertyGroup>
 
   <ItemGroup>
@@ -110,79 +107,78 @@
     <PropertyGroup>
       <TempExistingCSharpCommentsXMLString>@(CSharpCommentsXML)</TempExistingCSharpCommentsXMLString>
       <ExistingCSharpCommentsXMLString>$(TempExistingCSharpCommentsXMLString.Replace('%3C/dict%3E;', '%3C/dict%3E%0D%0A'))</ExistingCSharpCommentsXMLString>
-      <NewCSharpCommentsXMLString>$([MSBuild]::Escape('<dict>
-            <key>name</key>
-            <string>asm-comment-with-verbatim-string-literal</string>
-            <key>begin</key>
-            <string>(/\* ?language=asm ? \*/) ?(@")</string>
-            <key>beginCaptures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.comment.cs</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.string.begin.cs</string>
-              </dict>
-            </dict>
-            <key>end</key>
-            <string>"</string>
-            <key>endCaptures</key>
-            <dict>
-              <key>0</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.string.end.cs</string>
-              </dict>
-            </dict>
-            <key>patterns</key>
-            <array>
-              <dict>
-                <key>include</key>
-                <string>source.asm.x86_64</string>
-              </dict>
-            </array>
-          </dict>
-          <dict>
-            <key>name</key>
-            <string>asm-comment-with-raw-string-literal-triple</string>
-            <key>begin</key>
-            <string>(/\* ?language=asm ? \*/) ?(""")</string>
-            <key>beginCaptures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.comment.cs</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.string.begin.cs</string>
-              </dict>
-            </dict>
-            <key>end</key>
-            <string>"""</string>
-            <key>endCaptures</key>
-            <dict>
-              <key>0</key>
-              <dict>
-                <key>name</key>
-                <string>punctuation.definition.string.end.cs</string>
-              </dict>
-            </dict>
-            <key>patterns</key>
-            <array>
-              <dict>
-                <key>include</key>
-                <string>source.asm.x86_64</string>
-              </dict>
-            </array>
-          </dict>
-          '))</NewCSharpCommentsXMLString>
+      <NewCSharpCommentsXMLString>$([MSBuild]::Escape('&lt;dict&gt;
+            &lt;key&gt;name&lt;/key&gt;
+            &lt;string&gt;asm-comment-with-verbatim-string-literal&lt;/string&gt;
+            &lt;key&gt;begin&lt;/key&gt;
+            &lt;string&gt;(/\* ?language=asm ? \*/) ?(@&quot;)&lt;/string&gt;
+            &lt;key&gt;beginCaptures&lt;/key&gt;
+            &lt;dict&gt;
+              &lt;key&gt;1&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.comment.cs&lt;/string&gt;
+              &lt;/dict&gt;
+              &lt;key&gt;2&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.string.begin.cs&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;end&lt;/key&gt;
+            &lt;string&gt;&quot;&lt;/string&gt;
+            &lt;key&gt;endCaptures&lt;/key&gt;
+            &lt;dict&gt;
+              &lt;key&gt;0&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.string.end.cs&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;patterns&lt;/key&gt;
+            &lt;array&gt;
+              &lt;dict&gt;
+                &lt;key&gt;include&lt;/key&gt;
+                &lt;string&gt;source.asm.x86_64&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/array&gt;
+          &lt;/dict&gt;
+          &lt;dict&gt;
+            &lt;key&gt;name&lt;/key&gt;
+            &lt;string&gt;asm-comment-with-raw-string-literal-triple&lt;/string&gt;
+            &lt;key&gt;begin&lt;/key&gt;
+            &lt;string&gt;(/\* ?language=asm ? \*/) ?(&quot;&quot;&quot;)&lt;/string&gt;
+            &lt;key&gt;beginCaptures&lt;/key&gt;
+            &lt;dict&gt;
+              &lt;key&gt;1&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.comment.cs&lt;/string&gt;
+              &lt;/dict&gt;
+              &lt;key&gt;2&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.string.begin.cs&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;end&lt;/key&gt;
+            &lt;string&gt;&quot;&quot;&quot;&lt;/string&gt;
+            &lt;key&gt;endCaptures&lt;/key&gt;
+            &lt;dict&gt;
+              &lt;key&gt;0&lt;/key&gt;
+              &lt;dict&gt;
+                &lt;key&gt;name&lt;/key&gt;
+                &lt;string&gt;punctuation.definition.string.end.cs&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;patterns&lt;/key&gt;
+            &lt;array&gt;
+              &lt;dict&gt;
+                &lt;key&gt;include&lt;/key&gt;
+                &lt;string&gt;source.asm.x86_64&lt;/string&gt;
+              &lt;/dict&gt;
+            &lt;/array&gt;
+          &lt;/dict&gt;'))</NewCSharpCommentsXMLString>
     </PropertyGroup>
     
     <!-- Add the new asm comment patterns in the local csharp grammar. -->

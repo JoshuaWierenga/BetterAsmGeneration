@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="567335bb-0eca-46b9-80d5-4f3d96718ab5" Version="0.1" Language="en-US" Publisher="Joshua Wierenga" />
+        <Identity Id="567335bb-0eca-46b9-80d5-4f3d96718ab5" Version="0.1.1" Language="en-US" Publisher="Joshua Wierenga" />
         <DisplayName>C# x86_64 assembly syntax highlighting</DisplayName>
         <Description xml:space="preserve">Inline Intel syntax x86_64 assembly syntax highlighting in c#</Description>
         <MoreInfo>https://github.com/JoshuaWierenga/BetterAsmGeneration</MoreInfo>
@@ -10,7 +10,7 @@
         <Preview>true</Preview>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
     </Installation>
@@ -21,6 +21,6 @@
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="languages.pkgdef" />
     </Assets>
     <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
     </Prerequisites>
 </PackageManifest>
