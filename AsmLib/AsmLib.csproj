@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net46</TargetFramework>
+		<LangVersion>10.0</LangVersion>
+		<Platforms>x64</Platforms>
+
+		<VersionPrefix>0.1.0</VersionPrefix>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="Instructions.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>Instructions.cs</LastGenOutput>
+		</Content>
+		<Compile Update="Instructions.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Instructions.tt</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Iced" Version="1.17.0" />
+
+		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+
+</Project>

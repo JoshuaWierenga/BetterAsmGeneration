@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace AsmGenerator;
+namespace AsmLib;
 
 [StructLayout(LayoutKind.Explicit)]
-internal struct IntegerWrapper
+internal readonly struct IntegerWrapper
 {
     [FieldOffset(0)]
     internal readonly sbyte intS8 = 0;

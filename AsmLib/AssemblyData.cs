@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Iced.Intel;
 
-namespace AsmGenerator;
+namespace AsmLib;
 
 internal enum AssemblyDataType : byte
 {
@@ -187,10 +187,7 @@ public struct AssemblyData
             AssemblyDataType.Instruction => _instruction.ToString(),
             AssemblyDataType.Register => _register.ToString(),
             AssemblyDataType.Memory => $"__[{_memory.Base.ToString().ToLower()}]",
-            //Can't use range as its not in .net standard 2.0
-#pragma warning disable IDE0057 // Use range operator
             AssemblyDataType.Label => _label.Name.Substring(3),
-#pragma warning restore IDE0057 // Use range operator
             AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
             AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
             AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),

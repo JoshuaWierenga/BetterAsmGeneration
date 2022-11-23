@@ -1,28 +1,27 @@
-﻿using AsmGenerator;
+﻿using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
 using System;
 using System.Diagnostics;
-using static AsmGenerator.Instructions;
+using static AsmLib.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    var asm = new Assembler(bitness: 64);
-    asm.AddInstructions
-    (
+    /*Assembler asm = new(bitness: 64);
+    asm.AddInstructions( /* language = asm */ /*"""
         mov, rax, rcx,
         add, rax, rdx,
         ret
-    );
+    """);
 
     var addFunction = asm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
     Debug.Assert(44ul == addFunction(31, 13));
-    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));
+    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));*/
 
     AssemblerRegister64 a, b, c, d;
 
-    var asm2 = new Assembler(bitness: 64);
+    Assembler asm2 = new(bitness: 64);
     asm2.AddVariables
     (
         a = rcx,
@@ -43,7 +42,7 @@ unsafe
     Debug.Assert(210L == addFunction2(5, 2, 10, 20));
     Console.WriteLine("Something complex: 5 * 2 + 10 * 20 = " + addFunction2(5, 2, 10, 20));
 
-    var asm3 = new Assembler(bitness: 64);
+    Assembler asm3 = new(bitness: 64);
     asm3.AddInstructions
     (
         rdtsc,

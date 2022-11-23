@@ -1,7 +1,7 @@
 ﻿using System;
 using Iced.Intel;
 
-namespace AsmGenerator;
+namespace AsmLib;
 
 internal enum InstructionType : byte
 {

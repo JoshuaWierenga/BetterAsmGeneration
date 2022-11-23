@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AsmGenerator.Source_Generator;
+namespace AsmGenerator;
 
 internal class AssemblyInfo
 {

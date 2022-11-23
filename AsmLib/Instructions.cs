@@ -1,6 +1,6 @@
 ﻿using Iced.Intel;
 
-namespace AsmGenerator;
+namespace AsmLib;
 
 public static class Instructions
 {

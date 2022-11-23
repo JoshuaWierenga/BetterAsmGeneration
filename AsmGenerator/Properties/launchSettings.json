@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AsmMessaround": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\AsmMessaround\\AsmMessaround.csproj"
+    }
+  }
+}

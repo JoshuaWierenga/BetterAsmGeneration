@@ -1,8 +1,8 @@
-﻿using AsmGenerator;
+﻿using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static AsmGenerator.Instructions;
+using static AsmLib.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 namespace AsmGenerator.Tests;

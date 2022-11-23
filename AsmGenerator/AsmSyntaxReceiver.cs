@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AsmGenerator.Source_Generator;
+namespace AsmGenerator;
 
 internal class AsmSyntaxReceiver : ISyntaxReceiver
 {

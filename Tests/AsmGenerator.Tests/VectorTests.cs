@@ -1,12 +1,12 @@
-﻿using AsmGenerator;
-using AsmToDelegate;
+﻿using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using static AsmGenerator.Instructions;
+using AsmLib;
+using static AsmLib.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 namespace AsmGenerator.Tests;

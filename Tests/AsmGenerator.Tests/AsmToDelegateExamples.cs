@@ -1,8 +1,9 @@
 using System;
+using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static AsmGenerator.Instructions;
+using static AsmLib.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
 namespace AsmGenerator.Tests;
@@ -13,7 +14,7 @@ public unsafe class AsmToDelegateExamples
     [TestMethod]
     public void Add()
     {
-        var asm = new Assembler(bitness: 64);
+        Assembler asm = new(bitness: 64);
         asm.AddInstructions
         (
             mov, rax, rcx,
@@ -28,7 +29,7 @@ public unsafe class AsmToDelegateExamples
     [TestMethod]
     public void Variables()
     {
-        var asm = new Assembler(bitness: 64);
+        Assembler asm = new(bitness: 64);
         AssemblerRegister64 a, b, c, d;
 
         asm.AddVariables
@@ -54,7 +55,7 @@ public unsafe class AsmToDelegateExamples
     [TestMethod]
     public void TSC()
     {
-        var asm = new Assembler(bitness: 64);
+        Assembler asm = new(bitness: 64);
         asm.AddInstructions
         (
             rdtsc,
