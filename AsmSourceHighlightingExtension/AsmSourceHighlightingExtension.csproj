@@ -120,7 +120,7 @@
             &lt;key&gt;name&lt;/key&gt;
             &lt;string&gt;asm-comment-with-verbatim-string-literal&lt;/string&gt;
             &lt;key&gt;begin&lt;/key&gt;
-            &lt;string&gt;(/\* ?language=asm ? \*/) ?(@")&lt;/string&gt;
+            &lt;string&gt;(/\* ?language ?= ?asm ? \*/) ?(@")&lt;/string&gt;
             &lt;key&gt;beginCaptures&lt;/key&gt;
             &lt;dict&gt;
               &lt;key&gt;1&lt;/key&gt;
@@ -156,7 +156,7 @@
             &lt;key&gt;name&lt;/key&gt;
             &lt;string&gt;asm-comment-with-raw-string-literal-triple&lt;/string&gt;
             &lt;key&gt;begin&lt;/key&gt;
-            &lt;string&gt;(/\* ?language=asm ? \*/) ?(""")&lt;/string&gt;
+            &lt;string&gt;(/\* ?language ?= ?asm ? \*/) ?(""")&lt;/string&gt;
             &lt;key&gt;beginCaptures&lt;/key&gt;
             &lt;dict&gt;
               &lt;key&gt;1&lt;/key&gt;
