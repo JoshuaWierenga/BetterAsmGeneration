@@ -200,8 +200,10 @@ public struct AssemblyData
         };
     }
 
+    private static readonly MD5 _md5 = MD5.Create();
+
     //TODO Revert changes to this file, ignoreIndices is no longer required
-    public static string GetGuid(IEnumerable<AssemblyData> data, IEnumerable<int>? ignoreIndices = null)
+    public static string GetGuidParams(IEnumerable<AssemblyData> data, IEnumerable<int>? ignoreIndices = null)
     {
         StringBuilder sb = new();
 
@@ -222,9 +224,16 @@ public struct AssemblyData
             }
         }
 
-        using MD5 md5 = MD5.Create();
         string asmString = sb.ToString();
-        byte[] asmHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+        string asmGuid = new Guid(asmHash).ToString("N");
+
+        return asmGuid;
+    }
+
+    public static string GetGuidString(string data)
+    {
+        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(data));
         string asmGuid = new Guid(asmHash).ToString("N");
 
         return asmGuid;

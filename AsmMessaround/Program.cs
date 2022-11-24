@@ -8,16 +8,16 @@ using static Iced.Intel.AssemblerRegisters;
 
 unsafe
 {
-    /*Assembler asm = new(bitness: 64);
-    asm.AddInstructions( /* language = asm */ /*"""
-        mov, rax, rcx,
-        add, rax, rdx,
+    Assembler asm = new(bitness: 64);
+    asm.AddInstructions( /* language = asm */ """
+        mov rax rcx
+        add rax rdx
         ret
     """);
 
     var addFunction = asm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
     Debug.Assert(44ul == addFunction(31, 13));
-    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));*/
+    Console.WriteLine("Add two integers: 31 + 13 = " + addFunction(31, 13));
 
     AssemblerRegister64 a, b, c, d;
 

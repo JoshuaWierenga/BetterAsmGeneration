@@ -1,11 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace AsmGenerator;
 
@@ -34,6 +37,12 @@ internal class AsmGenerator : ISourceGenerator
         context.AddSource("AsmConverter.g.cs", sb.ToString());
     }
 
+    private static readonly Regex StringAsmDetectRegex = new(@"\/\* ?language ?= ?asm ?\*\/",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    private static List<(string mnemonic, List<string> operands)>? _instructions;
+    private static HashSet<string>? _labels;
+
     private static IReadOnlyList<AssemblyInfo> GetAssemblyCallsInfo(Compilation compilation,
         List<Tuple<ArgumentListSyntax, ArgumentListSyntax?>> assemblerCalls)
     {
@@ -53,95 +62,197 @@ internal class AsmGenerator : ISourceGenerator
                 variables = GetVariablesCallInfo(variablesCallArguments);
             }
 
-            List<(string mnemonic, List<string> operands)> instructions = new();
-            HashSet<string> labels = new();
-            StringBuilder sbInstruction = new();
+            _instructions = new List<(string mnemonic, List<string> operands)>();
+            _labels = new HashSet<string>();
 
-            foreach (ArgumentSyntax argument in assemblerCallArguments.Arguments)
+            byte[] argumentsHash;
+
+            bool inString = assemblerCallArguments.OpenParenToken.TrailingTrivia.Any(t =>
+                t.IsKind(SyntaxKind.MultiLineCommentTrivia) && StringAsmDetectRegex.IsMatch(t.ToString()));
+
+            if (inString)
             {
-                ExpressionSyntax asmData = argument.Expression;
-                ITypeSymbol? typeSymbol = ModelExtensions.GetTypeInfo(semanticModel, asmData).Type;
-
-                switch (asmData)
+                if (assemblerCallArguments.Arguments[0].Expression is LiteralExpressionSyntax argument)
                 {
-                    //Instruction Mnemonic
-                    case IdentifierNameSyntax identifier when typeSymbol?.Name == "Instruction":
-                        string instructionLabel = identifier.Identifier.ValueText.ToLower();
+                    ParseStringInstructions(argument.Token.ValueText, variables);
 
-                        if (instructionLabel == "emitlabel")
-                        {
-                            instructions.Add(("Label", new List<string>()));
-                            sbInstruction.Append("emit label");
-                        }
-                        else
-                        {
-                            instructions.Add((instructionLabel, new List<string>()));
-                            sbInstruction.Append(instructionLabel);
-                        }
-                        break;
-                    //Register
-                    case IdentifierNameSyntax identifier when typeSymbol is
-                    {
-                        Name: "AssemblerRegister8" or "AssemblerRegister16" or "AssemblerRegister32"
-                        or "AssemblerRegister64" or "AssemblerRegisterXMM" or "AssemblerRegisterYMM"
-                        or "AssemblerRegisterZMM"
-                    } && instructions.Count > 0:
-                        string operandLabel = identifier.Identifier.ValueText.ToLower();
-                        (string variable, string register)? match =
-                            variables?.LastOrDefault(v => v.variable == operandLabel);
-                        if (match is { register: { } })
-                        {
-                            operandLabel = match.Value.register;
-                        }
-
-                        instructions.Last().operands.Add(operandLabel);
-                        sbInstruction.Append(operandLabel);
-
-                        break;
-                    //TODO Fully support Memory and support in combination with variables
-                    //Memory Access
-                    case ElementAccessExpressionSyntax element when typeSymbol is
-                    {
-                        Name: "AssemblerMemoryOperand"
-                    } && instructions.Count > 0:
-                        string memoryOperand = element.ToFullString();
-                        instructions.Last().operands.Add(memoryOperand);
-                        sbInstruction.Append(memoryOperand);
-                        break;
-                    //Label
-                    case IdentifierNameSyntax label when typeSymbol?.Name == "Label":
-                        string labelName = label.Identifier.ValueText;
-                        instructions.Last().operands.Add(labelName);
-                        labels.Add(labelName);
-                        sbInstruction.Append(labelName);
-                        break;
-                    //TODO Support floating point, check how assembly normally handles them
-                    //Number
-                    case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.NumericLiteralExpression) &&
-                                                              instructions.Count > 0:
-                        string literalValue = literal.Token.ValueText;
-                        instructions.Last().operands.Add(literalValue);
-                        sbInstruction.Append(literalValue);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid type passed into asm block. Type was " +
-                                                    typeSymbol?.ToDisplayString());
+                    argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(argument.Token.ValueText));
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid string argument was passed into AddInstructions.");
                 }
             }
+            else
+            {
+                string asmString = ParseParamsInstructions(assemblerCallArguments.Arguments, semanticModel, variables);
 
-            // get a stable id for the code in a reasonably quick way
-            string asmString = sbInstruction.ToString();
-            byte[] asmHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
-            Guid asmGuid = new(asmHash);
+                // TODO use string format hashing method so that the same code in both formats gives the same hash and so
+                // avoids duplicating functions
+                // get a stable id for the code in a reasonably quick way
+                argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+            }
+
+            Guid asmGuid = new(argumentsHash);
 
             if (existingAssemblies.Contains(asmGuid)) continue;
 
             existingAssemblies.Add(asmGuid);
             string asmGuidString = asmGuid.ToString("N");
-            assemblyInfos.Add(new AssemblyInfo(asmGuidString, instructions, labels));
+            assemblyInfos.Add(new AssemblyInfo(asmGuidString, _instructions, _labels));
         }
 
         return assemblyInfos;
+    }
+
+    // TODO Remove reflection as much as possible
+    // TODO Remove debug statements
+    private static void ParseStringInstructions(string instructionString,
+        IReadOnlyList<(string variable, string register)>? variables)
+    {
+        string[] tokens =
+            instructionString.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (string token in tokens)
+        {
+            string lowerToken = token.ToLower();
+
+            // Instruction Mnemonic
+            FieldInfo? instruction = typeof(AsmLib.Instructions).GetField(token);
+            if (instruction != null)
+            {
+                // TODO Support labels
+                if (lowerToken == "emitlabel")
+                {
+                    throw new ArgumentException("EmitLabel is not currently supported with string instructions");
+
+                }
+                else
+                {
+                    _instructions!.Add((lowerToken, new List<string>()));
+                }
+
+                Debug.WriteLine($"{token} is an instruction");
+                continue;
+            }
+
+            // Register
+            FieldInfo? register = typeof(Iced.Intel.AssemblerRegisters).GetField(token);
+            if (_instructions!.Count > 0 && register != null)
+            {
+                _instructions.Last().operands.Add(lowerToken);
+
+                Debug.WriteLine($"{token} is a register");
+                continue;
+            }
+
+            // Register Variable
+            (string variable, string register)? match =
+                variables?.LastOrDefault(v => v.variable == lowerToken);
+            if (match is { register: { } })
+            {
+                _instructions.Last().operands.Add(match.Value.register);
+
+                Debug.WriteLine($"{token} is a variable corresponding to {match.Value.register}");
+                continue;
+            }
+
+            // TODO Support memory accesses and labels
+
+            //Number
+            if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
+            {
+                _instructions.Last().operands.Add(lowerToken);
+
+                Debug.WriteLine($"{token} is an immediate");
+                continue;
+            }
+
+            Debug.WriteLine($"{token} was not understood");
+
+            throw new ArgumentException($"Invalid token passed into asm block: {token}");
+        }
+    }
+
+    private static string ParseParamsInstructions(SeparatedSyntaxList<ArgumentSyntax> tokenList, SemanticModel semanticModel,
+        IReadOnlyList<(string variable, string register)>? variables)
+    {
+        StringBuilder sbInstructions = new();
+
+        foreach (ArgumentSyntax argument in tokenList)
+        {
+            ExpressionSyntax asmData = argument.Expression;
+            ITypeSymbol? typeSymbol = ModelExtensions.GetTypeInfo(semanticModel, asmData).Type;
+
+            switch (asmData)
+            {
+                //Instruction Mnemonic
+                case IdentifierNameSyntax identifier when typeSymbol?.Name == "Instruction":
+                    string instructionLabel = identifier.Identifier.ValueText.ToLower();
+
+                    if (instructionLabel == "emitlabel")
+                    {
+                        _instructions!.Add(("Label", new List<string>()));
+                        sbInstructions.Append("emit label");
+                    }
+                    else
+                    {
+                        _instructions!.Add((instructionLabel, new List<string>()));
+                        sbInstructions.Append(instructionLabel);
+                    }
+
+                    break;
+                //Register
+                case IdentifierNameSyntax identifier when typeSymbol is
+                {
+                    Name: "AssemblerRegister8" or "AssemblerRegister16" or "AssemblerRegister32"
+                    or "AssemblerRegister64" or "AssemblerRegisterXMM" or "AssemblerRegisterYMM"
+                    or "AssemblerRegisterZMM"
+                } && _instructions!.Count > 0:
+                    string operandLabel = identifier.Identifier.ValueText.ToLower();
+                    (string variable, string register)? match =
+                        variables?.LastOrDefault(v => v.variable == operandLabel);
+                    if (match is { register: { } })
+                    {
+                        operandLabel = match.Value.register;
+                    }
+
+                    _instructions.Last().operands.Add(operandLabel);
+                    sbInstructions.Append(operandLabel);
+
+                    break;
+                //TODO Fully support Memory and support in combination with variables
+                //Memory Access
+                case ElementAccessExpressionSyntax element when typeSymbol is
+                {
+                    Name: "AssemblerMemoryOperand"
+                } && _instructions!.Count > 0:
+                    string memoryOperand = element.ToFullString();
+                    _instructions.Last().operands.Add(memoryOperand);
+                    sbInstructions.Append(memoryOperand);
+                    break;
+                //Label
+                case IdentifierNameSyntax label when typeSymbol?.Name == "Label":
+                    string labelName = label.Identifier.ValueText;
+                    _instructions!.Last().operands.Add(labelName);
+                    _labels!.Add(labelName);
+                    sbInstructions.Append(labelName);
+                    break;
+                //TODO Support floating point, check how assembly normally handles them
+                //Number
+                case LiteralExpressionSyntax literal when literal.IsKind(SyntaxKind.NumericLiteralExpression) &&
+                                                          _instructions!.Count > 0:
+                    string literalValue = literal.Token.ValueText;
+                    _instructions.Last().operands.Add(literalValue);
+                    sbInstructions.Append(literalValue);
+                    break;
+                default:
+                    throw new ArgumentException("Invalid type passed into asm block. Type was " +
+                                                typeSymbol?.ToDisplayString());
+            }
+        }
+
+        return sbInstructions.ToString();
     }
 
     private static IReadOnlyList<(string variable, string register)> GetVariablesCallInfo(
@@ -172,7 +283,7 @@ namespace AsmLib
 {
     internal static class Generator
     {");
-        GenerateAsmWrapperMethod(sb, assemblyInfos, indent);
+        GenerateAsmWrappersMethod(sb, assemblyInfos, indent);
 
         foreach (AssemblyInfo assemblyInfo in assemblyInfos)
         {
@@ -184,23 +295,33 @@ namespace AsmLib
 }");
     }
 
-    private static void GenerateAsmWrapperMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
+    private static void GenerateAsmWrappersMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
         string indent)
     {
+        GenerateAsmWrapperMethod(sb, assemblerInfos, indent, AssemblyFormat.Params);
+        GenerateAsmWrapperMethod(sb, assemblerInfos, indent, AssemblyFormat.String);
+    }
+
+    // Todo only output relevant hashes for each format
+    private static void GenerateAsmWrapperMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
+        string indent, AssemblyFormat format)
+    {
+        string parameter = format == AssemblyFormat.Params ? "params AssemblyData[] assembly" : "string assembly";
+
         //TODO Write summary
         sb.AppendLine($"{indent}// <summary> </summary>");
         sb.AppendLine(
-            $"{indent}public static void AddInstructions(this Assembler assembler, params AssemblyData[] assembly)");
+            $"{indent}public static void AddInstructions(this Assembler assembler, {parameter})");
         sb.AppendLine($"{indent}{{");
 
         if (!assemblerInfos.Any())
         {
-            sb.AppendLine($"{indent}// This will be filled in by the generator once you call it");
+            sb.AppendLine($"{indent}// This will be filled in by the generator once you call this function");
             sb.AppendLine($"{indent}throw new Exception(\"This shouldn't be possible.\");");
         }
         else
         {
-            GenerateAsmWrapperMethodBody(sb, assemblerInfos, indent + "    ");
+            GenerateAsmWrapperMethodBody(sb, assemblerInfos, indent + "    ", format);
         }
 
         sb.AppendLine($"{indent}}}");
@@ -208,9 +329,11 @@ namespace AsmLib
     }
 
     private static void GenerateAsmWrapperMethodBody(StringBuilder sb, IEnumerable<AssemblyInfo> assemblerInfos,
-        string indent)
+        string indent, AssemblyFormat format)
     {
-        sb.AppendLine($"{indent}string guid = AssemblyData.GetGuid(assembly);");
+        sb.AppendLine(format == AssemblyFormat.Params
+            ? $"{indent}string guid = AssemblyData.GetGuidParams(assembly);"
+            : $"{indent}string guid = AssemblyData.GetGuidString(assembly);");
         sb.AppendLine();
         sb.AppendLine($"{indent}switch (guid)");
         sb.AppendLine($"{indent}{{");
