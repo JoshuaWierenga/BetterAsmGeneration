@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
@@ -10,6 +10,10 @@
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\AsmLib\GeneratorInstructions.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<!--Find something like PrivateAssets="all" for ProjectReference, https://github.com/dotnet/sdk/issues/952 -->

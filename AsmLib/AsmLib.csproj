@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<LangVersion>10.0</LangVersion>
@@ -9,6 +9,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Content Include="GeneratorInstructions.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>GeneratorInstructions.cs</LastGenOutput>
+		</Content>
+		<None Include="GeneratorInstructions.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>GeneratorInstructions.tt</DependentUpon>
+		</None>
+
 		<Content Include="Instructions.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>Instructions.cs</LastGenOutput>

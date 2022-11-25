@@ -118,14 +118,12 @@ internal class AsmGenerator : ISourceGenerator
             string lowerToken = token.ToLower();
 
             // Instruction Mnemonic
-            FieldInfo? instruction = typeof(AsmLib.Instructions).GetField(token);
-            if (instruction != null)
+            if (AsmLib.GeneratorInstructions.Instructions.Contains(token))
             {
                 // TODO Support labels
                 if (lowerToken == "emitlabel")
                 {
                     throw new ArgumentException("EmitLabel is not currently supported with string instructions");
-
                 }
                 else
                 {
