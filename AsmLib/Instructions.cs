@@ -3672,5 +3672,13 @@ public static class Instructions
 
     public static readonly Instruction vsubrps = new (Mnemonic.Vsubrps);
 
+    public static readonly Instruction xsha512 = new (Mnemonic.Xsha512);
+
+    public static readonly Instruction xstore_alt = new (Mnemonic.Xstore_alt);
+
+    public static readonly Instruction xsha512_alt = new (Mnemonic.Xsha512_alt);
+
+    public static readonly Instruction zero_bytes = new (Mnemonic.Zero_bytes);
+
     public static readonly Instruction EmitLabel = new (true);
 }

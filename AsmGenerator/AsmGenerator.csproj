@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!--Find something like PrivateAssets="all" for ProjectReference, https://github.com/dotnet/sdk/issues/952 -->
 		<ProjectReference Include="$(SolutionDir)AsmLib\AsmLib.csproj" />
 
 		<PackageReference Include="Iced" Version="1.17.0" PrivateAssets="all" GeneratePathProperty="true" />

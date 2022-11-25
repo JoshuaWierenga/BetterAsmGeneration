@@ -1,5 +1,5 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
-<#@ assembly name="C:\\Users\\Joshua Wierenga\\.nuget\\packages\\iced\\1.15.0\\lib\\net45\\Iced.dll" #>
+<#@ assembly name="$(PKGIced)\\lib\\net45\\Iced.dll" #>
 <#@ import namespace="Iced.Intel" #>
 <#@ output extension=".cs" #>
 using Iced.Intel;
