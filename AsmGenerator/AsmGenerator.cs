@@ -63,6 +63,7 @@ internal class AsmGenerator : ISourceGenerator
 
             _instructions = new List<(string mnemonic, List<string> operands)>();
             _labels = new HashSet<string>();
+            string asmString;
 
             byte[] argumentsHash;
 
@@ -73,9 +74,7 @@ internal class AsmGenerator : ISourceGenerator
             {
                 if (assemblerCallArguments.Arguments[0].Expression is LiteralExpressionSyntax argument)
                 {
-                    ParseStringInstructions(argument.Token.ValueText, variables);
-
-                    argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(argument.Token.ValueText));
+                    asmString = ParseStringInstructions(argument.Token.ValueText, variables);
                 }
                 else
                 {
@@ -84,14 +83,11 @@ internal class AsmGenerator : ISourceGenerator
             }
             else
             {
-                string asmString = ParseParamsInstructions(assemblerCallArguments.Arguments, semanticModel, variables);
-
-                // TODO use string format hashing method so that the same code in both formats gives the same hash and so
-                // avoids duplicating functions
-                // get a stable id for the code in a reasonably quick way
-                argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+                asmString = ParseParamsInstructions(assemblerCallArguments.Arguments, semanticModel, variables);
             }
 
+            // get a stable id for the code in a reasonably quick way
+            argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
             Guid asmGuid = new(argumentsHash);
 
             if (existingAssemblies.Contains(asmGuid)) continue;
@@ -104,11 +100,12 @@ internal class AsmGenerator : ISourceGenerator
         return assemblyInfos;
     }
 
-    // TODO Remove reflection as much as possible
     // TODO Remove debug statements
-    private static void ParseStringInstructions(string instructionString,
+    private static string ParseStringInstructions(string instructionString,
         IReadOnlyList<(string variable, string register)>? variables)
     {
+        StringBuilder sbInstructions = new();
+
         string[] tokens =
             instructionString.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -127,6 +124,7 @@ internal class AsmGenerator : ISourceGenerator
                 else
                 {
                     _instructions!.Add((lowerToken, new List<string>()));
+                    sbInstructions.Append(lowerToken);
                 }
 
                 Debug.WriteLine($"{token} is an instruction");
@@ -137,6 +135,7 @@ internal class AsmGenerator : ISourceGenerator
             if (_instructions!.Count > 0 && AsmLib.GeneratorRegisters.Registers.Contains(token))
             {
                 _instructions.Last().operands.Add(lowerToken);
+                sbInstructions.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is a register");
                 continue;
@@ -148,6 +147,7 @@ internal class AsmGenerator : ISourceGenerator
             if (match is { register: { } })
             {
                 _instructions.Last().operands.Add(match.Value.register);
+                sbInstructions.Append(match.Value.register);
 
                 Debug.WriteLine($"{token} is a variable corresponding to {match.Value.register}");
                 continue;
@@ -159,6 +159,7 @@ internal class AsmGenerator : ISourceGenerator
             if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
             {
                 _instructions.Last().operands.Add(lowerToken);
+                sbInstructions.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is an immediate");
                 continue;
@@ -168,6 +169,8 @@ internal class AsmGenerator : ISourceGenerator
 
             throw new ArgumentException($"Invalid token passed into asm block: {token}");
         }
+
+        return sbInstructions.ToString();
     }
 
     private static string ParseParamsInstructions(SeparatedSyntaxList<ArgumentSyntax> tokenList, SemanticModel semanticModel,

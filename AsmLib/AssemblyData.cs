@@ -202,29 +202,9 @@ public struct AssemblyData
 
     private static readonly MD5 _md5 = MD5.Create();
 
-    //TODO Revert changes to this file, ignoreIndices is no longer required
-    public static string GetGuidParams(IEnumerable<AssemblyData> data, IEnumerable<int>? ignoreIndices = null)
+    public static string GetGuidParams(IEnumerable<AssemblyData> data)
     {
-        StringBuilder sb = new();
-
-        using IEnumerator<AssemblyData> dataEnumerator = data.GetEnumerator();
-        using IEnumerator<int>? indexEnumerator = ignoreIndices?.GetEnumerator();
-        bool stillRemoving = true;
-
-        indexEnumerator?.MoveNext();
-        for(int i = 0; dataEnumerator.MoveNext(); i++)
-        {
-            if (stillRemoving && i == indexEnumerator?.Current)
-            {
-                stillRemoving = indexEnumerator.MoveNext();
-            }
-            else
-            {
-                sb.Append(dataEnumerator.Current.ToString().ToLower());
-            }
-        }
-
-        string asmString = sb.ToString();
+        string asmString = string.Concat(data).ToLower();
         byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(asmString));
         string asmGuid = new Guid(asmHash).ToString("N");
 
@@ -233,7 +213,9 @@ public struct AssemblyData
 
     public static string GetGuidString(string data)
     {
-        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(data));
+        string[] asmTokens = data.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string asmString = string.Concat(asmTokens).ToLower();
+        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(asmString));
         string asmGuid = new Guid(asmHash).ToString("N");
 
         return asmGuid;
