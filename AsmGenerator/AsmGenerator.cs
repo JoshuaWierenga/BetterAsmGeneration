@@ -298,20 +298,36 @@ namespace AsmLib
     private static void GenerateAsmWrappersMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
         string indent)
     {
-        GenerateAsmWrapperMethod(sb, assemblerInfos, indent, AssemblyFormat.Params);
-        GenerateAsmWrapperMethod(sb, assemblerInfos, indent, AssemblyFormat.String);
+        GenerateAsmWrapperMethod(sb, indent, AssemblyFormat.Params);
+        GenerateAsmWrapperMethod(sb, indent, AssemblyFormat.String);
+
+        GenerateAsmHandlerMethod(sb, assemblerInfos, indent);
     }
 
-    // Todo only output relevant hashes for each format
-    private static void GenerateAsmWrapperMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
-        string indent, AssemblyFormat format)
+    private static void GenerateAsmWrapperMethod(StringBuilder sb, string indent, AssemblyFormat format)
     {
         string parameter = format == AssemblyFormat.Params ? "params AssemblyData[] assembly" : "string assembly";
 
-        //TODO Write summary
+        sb.AppendLine($"{indent}public static void AddInstructions(this Assembler assembler, {parameter})");
+        sb.AppendLine($"{indent}{{");
+
+        GenerateAsmWrapperMethodBody(sb, indent + "    ", format);
+
+        sb.AppendLine($"{indent}}}");
+        sb.AppendLine();
+    }
+
+    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, string indent, AssemblyFormat format)
+    {
+        sb.AppendLine($"{indent}string guid = AssemblyData.GetGuid{format}(assembly);");
+        sb.AppendLine($"{indent}FindInstructions(assembler, guid);");
+    }
+
+    private static void GenerateAsmHandlerMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
+        string indent)
+    {
         sb.AppendLine($"{indent}// <summary> </summary>");
-        sb.AppendLine(
-            $"{indent}public static void AddInstructions(this Assembler assembler, {parameter})");
+        sb.AppendLine($"{indent}private static void FindInstructions(this Assembler assembler, string guid)");
         sb.AppendLine($"{indent}{{");
 
         if (!assemblerInfos.Any())
@@ -321,20 +337,16 @@ namespace AsmLib
         }
         else
         {
-            GenerateAsmWrapperMethodBody(sb, assemblerInfos, indent + "    ", format);
+            GenerateAsmHandlerMethodBody(sb, assemblerInfos, indent + "    ");
         }
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine();
     }
 
-    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, IEnumerable<AssemblyInfo> assemblerInfos,
-        string indent, AssemblyFormat format)
+    private static void GenerateAsmHandlerMethodBody(StringBuilder sb, IEnumerable<AssemblyInfo> assemblerInfos,
+        string indent)
     {
-        sb.AppendLine(format == AssemblyFormat.Params
-            ? $"{indent}string guid = AssemblyData.GetGuidParams(assembly);"
-            : $"{indent}string guid = AssemblyData.GetGuidString(assembly);");
-        sb.AppendLine();
         sb.AppendLine($"{indent}switch (guid)");
         sb.AppendLine($"{indent}{{");
 
@@ -377,7 +389,10 @@ namespace AsmLib
             sb.AppendLine($"{indent}Label {label} = assembler.CreateLabel();");
         }
 
-        sb.AppendLine();
+        if (assemblyInfo.Labels.Count != 0)
+        {
+            sb.AppendLine();
+        }
 
         foreach ((string mnemonic, List<string> operands) in assemblyInfo.Instructions)
         {
