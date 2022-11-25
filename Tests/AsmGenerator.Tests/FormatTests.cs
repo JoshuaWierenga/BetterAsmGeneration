@@ -9,7 +9,7 @@ namespace AsmGenerator.Tests;
 public class FormatTests
 {
     [TestMethod]
-    public void InstructionFormatTest()
+    public void FormatMatchTest()
     {
         string paramsGuid = AssemblyData.GetGuidParams(new AssemblyData[]
         {
@@ -23,5 +23,23 @@ public class FormatTests
         ");
 
         Assert.AreEqual(paramsGuid, stringGuid);
+    }
+
+    [TestMethod]
+    public void StringFormatFormattingIndependentTest()
+    {
+        string stringGuid1 = AssemblyData.GetGuidString(@"
+            mov rax 3
+            ret
+        ");
+
+        string stringGuid2 = AssemblyData.GetGuidString(@"
+            mov rax 
+3
+
+                         ret
+        ");
+
+        Assert.AreEqual(stringGuid1, stringGuid2);
     }
 }
