@@ -65,8 +65,6 @@ internal class AsmGenerator : ISourceGenerator
             _labels = new HashSet<string>();
             string asmString;
 
-            byte[] argumentsHash;
-
             bool inString = assemblerCallArguments.OpenParenToken.TrailingTrivia.Any(t =>
                 t.IsKind(SyntaxKind.MultiLineCommentTrivia) && StringAsmDetectRegex.IsMatch(t.ToString()));
 
@@ -87,7 +85,7 @@ internal class AsmGenerator : ISourceGenerator
             }
 
             // get a stable id for the code in a reasonably quick way
-            argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
+            byte[] argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
             Guid asmGuid = new(argumentsHash);
 
             if (existingAssemblies.Contains(asmGuid)) continue;
@@ -112,6 +110,7 @@ internal class AsmGenerator : ISourceGenerator
         foreach (string token in tokens)
         {
             string lowerToken = token.ToLower();
+            sbInstructions.Append(lowerToken);
 
             // Instruction Mnemonic
             if (AsmLib.GeneratorInstructions.Instructions.Contains(token))
@@ -124,7 +123,6 @@ internal class AsmGenerator : ISourceGenerator
                 else
                 {
                     _instructions!.Add((lowerToken, new List<string>()));
-                    sbInstructions.Append(lowerToken);
                 }
 
                 Debug.WriteLine($"{token} is an instruction");
@@ -135,7 +133,6 @@ internal class AsmGenerator : ISourceGenerator
             if (_instructions!.Count > 0 && AsmLib.GeneratorRegisters.Registers.Contains(token))
             {
                 _instructions.Last().operands.Add(lowerToken);
-                sbInstructions.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is a register");
                 continue;
@@ -147,7 +144,6 @@ internal class AsmGenerator : ISourceGenerator
             if (match is { register: { } })
             {
                 _instructions.Last().operands.Add(match.Value.register);
-                sbInstructions.Append(match.Value.register);
 
                 Debug.WriteLine($"{token} is a variable corresponding to {match.Value.register}");
                 continue;
@@ -159,7 +155,6 @@ internal class AsmGenerator : ISourceGenerator
             if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
             {
                 _instructions.Last().operands.Add(lowerToken);
-                sbInstructions.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is an immediate");
                 continue;
