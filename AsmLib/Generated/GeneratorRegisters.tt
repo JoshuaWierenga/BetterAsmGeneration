@@ -1,0 +1,25 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="$(PKGIced)\\lib\\net45\\Iced.dll" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="Iced.Intel" #>
+<#@ output extension=".cs" #>
+namespace AsmLib;
+
+internal static class GeneratorRegisters
+{
+    // This list allows AsmGenerator to check if a token is an register when given string format assembly
+    // without having to use reflection to access full register list directly
+    internal static string[] Registers = {
+    <# FieldInfo[] properties = typeof(AssemblerRegisters).GetFields(); 
+    foreach (FieldInfo register in properties)
+    {
+        String registerName = register.Name;
+        if (registerName.StartsWith("__"))
+        {
+            continue;
+        } #>
+    "<#= registerName #>",
+    <# }
+    #>
+};
+}

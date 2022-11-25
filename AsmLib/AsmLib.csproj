@@ -9,21 +9,31 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="GeneratorInstructions.tt">
+		<Content Include="Generated\GeneratorInstructions.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorInstructions.cs</LastGenOutput>
 		</Content>
-		<None Include="GeneratorInstructions.cs">
+		<None Include="Generated\GeneratorInstructions.cs">
 			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
 			<DependentUpon>GeneratorInstructions.tt</DependentUpon>
 		</None>
 
-		<Content Include="Instructions.tt">
+		<Content Include="Generated\GeneratorRegisters.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>GeneratorRegisters.cs</LastGenOutput>
+		</Content>
+		<None Include="Generated\GeneratorRegisters.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>GeneratorRegisters.tt</DependentUpon>
+		</None>
+
+		<Content Include="Generated\Instructions.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>Instructions.cs</LastGenOutput>
 		</Content>
-		<Compile Update="Instructions.cs">
+		<Compile Update="Generated\Instructions.cs">
 			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Instructions.tt</DependentUpon>

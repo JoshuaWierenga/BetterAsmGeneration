@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -135,8 +134,7 @@ internal class AsmGenerator : ISourceGenerator
             }
 
             // Register
-            FieldInfo? register = typeof(Iced.Intel.AssemblerRegisters).GetField(token);
-            if (_instructions!.Count > 0 && register != null)
+            if (_instructions!.Count > 0 && AsmLib.GeneratorRegisters.Registers.Contains(token))
             {
                 _instructions.Last().operands.Add(lowerToken);
 
