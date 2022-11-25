@@ -5,14 +5,14 @@
 		<LangVersion>10.0</LangVersion>
 		<Platforms>x64</Platforms>
 
-		<VersionPrefix>0.1.0</VersionPrefix>
+		<VersionPrefix>0.1.1</VersionPrefix>
 
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\AsmLib\AsmLib.csproj" />
+		<ProjectReference Include="$(SolutionDir)AsmLib\AsmLib.csproj" />
 
 		<PackageReference Include="Iced" Version="1.17.0" PrivateAssets="all" GeneratePathProperty="true" />
 
@@ -26,7 +26,7 @@
 
 	<Target Name="GetDependencyTargetPaths">
 		<ItemGroup>
-			<TargetPathWithTargetPlatformMoniker Include="..\AsmLib\bin\x64\Debug\netstandard2.0\AsmLib.dll" IncludeRuntimeDependency="false" />
+			<TargetPathWithTargetPlatformMoniker Include="$(SolutionDir)AsmLib\bin\x64\Debug\netstandard2.0\AsmLib.dll" IncludeRuntimeDependency="false" />
 			<TargetPathWithTargetPlatformMoniker Include="$(PKGIced)\lib\netstandard2.0\Iced.dll" IncludeRuntimeDependency="false" />
 		</ItemGroup>
 	</Target>

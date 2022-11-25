@@ -3,20 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmMessaround", "AsmMessaround\AsmMessaround.csproj", "{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4} = {BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6353869D-661F-4CA2-96CC-99BA7CF141C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmLib", "AsmLib\AsmLib.csproj", "{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmGenerator", "AsmGenerator\AsmGenerator.csproj", "{648BB631-4B75-48AC-A565-EC414648F907}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6353869D-661F-4CA2-96CC-99BA7CF141C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmSourceHighlightingExtension", "AsmSourceHighlightingExtension\AsmSourceHighlightingExtension.csproj", "{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmGenerator.Tests", "Tests\AsmGenerator.Tests\AsmGenerator.Tests.csproj", "{861D811F-88F7-4A31-84BA-F88390A147E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsmSourceHighlightingExtension", "AsmSourceHighlightingExtension\AsmSourceHighlightingExtension.csproj", "{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmLib", "AsmLib\AsmLib.csproj", "{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AsmMessaround", "Tests\AsmMessaround\AsmMessaround.csproj", "{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,32 +21,33 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Debug|x64.ActiveCfg = Debug|x64
-		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Debug|x64.Build.0 = Debug|x64
-		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Release|x64.ActiveCfg = Release|x64
-		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Release|x64.Build.0 = Release|x64
-		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|x64.ActiveCfg = Debug|x64
-		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|x64.Build.0 = Debug|x64
-		{648BB631-4B75-48AC-A565-EC414648F907}.Release|x64.ActiveCfg = Release|x64
-		{648BB631-4B75-48AC-A565-EC414648F907}.Release|x64.Build.0 = Release|x64
-		{861D811F-88F7-4A31-84BA-F88390A147E7}.Debug|x64.ActiveCfg = Debug|x64
-		{861D811F-88F7-4A31-84BA-F88390A147E7}.Debug|x64.Build.0 = Debug|x64
-		{861D811F-88F7-4A31-84BA-F88390A147E7}.Release|x64.ActiveCfg = Release|x64
-		{861D811F-88F7-4A31-84BA-F88390A147E7}.Release|x64.Build.0 = Release|x64
-		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Debug|x64.ActiveCfg = Debug|x64
-		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Debug|x64.Build.0 = Debug|x64
-		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Release|x64.ActiveCfg = Release|x64
-		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Release|x64.Build.0 = Release|x64
 		{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}.Debug|x64.ActiveCfg = Debug|x64
 		{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}.Debug|x64.Build.0 = Debug|x64
 		{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}.Release|x64.ActiveCfg = Release|x64
 		{BCDC2805-4CC8-4E6D-A372-A6661F0DD9C4}.Release|x64.Build.0 = Release|x64
+		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|x64.ActiveCfg = Debug|x64
+		{648BB631-4B75-48AC-A565-EC414648F907}.Debug|x64.Build.0 = Debug|x64
+		{648BB631-4B75-48AC-A565-EC414648F907}.Release|x64.ActiveCfg = Release|x64
+		{648BB631-4B75-48AC-A565-EC414648F907}.Release|x64.Build.0 = Release|x64
+		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Debug|x64.ActiveCfg = Debug|x64
+		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Debug|x64.Build.0 = Debug|x64
+		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Release|x64.ActiveCfg = Release|x64
+		{C5A73D2F-95F0-4037-B3FD-AE8F231A1A5A}.Release|x64.Build.0 = Release|x64
+		{861D811F-88F7-4A31-84BA-F88390A147E7}.Debug|x64.ActiveCfg = Debug|x64
+		{861D811F-88F7-4A31-84BA-F88390A147E7}.Debug|x64.Build.0 = Debug|x64
+		{861D811F-88F7-4A31-84BA-F88390A147E7}.Release|x64.ActiveCfg = Release|x64
+		{861D811F-88F7-4A31-84BA-F88390A147E7}.Release|x64.Build.0 = Release|x64
+		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Debug|x64.ActiveCfg = Debug|x64
+		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Debug|x64.Build.0 = Debug|x64
+		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Release|x64.ActiveCfg = Release|x64
+		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{861D811F-88F7-4A31-84BA-F88390A147E7} = {6353869D-661F-4CA2-96CC-99BA7CF141C4}
+		{13E1F6A6-0DCB-48AA-82C6-87500FA04C2E} = {6353869D-661F-4CA2-96CC-99BA7CF141C4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59EA4D80-C015-4172-996F-6A0E48191FC0}
