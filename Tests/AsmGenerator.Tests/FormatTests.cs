@@ -1,4 +1,5 @@
-﻿using AsmLib;
+﻿using System;
+using AsmLib;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static AsmLib.Instructions;
@@ -26,25 +27,44 @@ public class FormatTests
         Assert.AreEqual(paramsGuid, stringGuid);
     }
 
-    // This test fails currently as the compiler turns r into rax before calling GetGuidParams but is unable to do
-    // the same with GetGuidString
     [TestMethod]
     public void FormatMatchTestVariables()
     {
-        AssemblerRegister64 r = rax;
+        AssemblerRegister64 r;
 
-        string paramsGuid = AssemblyData.GetGuidParams(new AssemblyData[]
+        Assembler asmParam = new(bitness: 64);
+        asmParam.AddVariables
+        (
+            r = rax
+        ).AddInstructions
+        (
+            mov, r, 3,
+            ret
+        );
+
+        string hashParam = AssemblyData.GetGuidParams(new AssemblyData[]
         {
             mov, r, 3,
             ret
         });
+        Action<Assembler> implParam = Generator.Implementations[hashParam];
 
-        string stringGuid = AssemblyData.GetGuidString(@"
+        Assembler asmString = new(bitness: 64);
+        asmString.AddVariables
+        (
+            r = rax
+        ).AddInstructions( /* language = asm */ @"
             mov r 3
             ret
         ");
 
-        Assert.AreEqual(paramsGuid, stringGuid);
+        string hashString = AssemblyData.GetGuidString(@"
+            mov r 3
+            ret
+        ");
+        Action<Assembler> implString = Generator.Implementations[hashString];
+
+        Assert.AreEqual(implParam, implString);
     }
 
     [TestMethod]

@@ -31,7 +31,7 @@ internal class AsmGenerator : ISourceGenerator
         IReadOnlyList<AssemblyInfo> assemblyInfos = GetAssemblyCallsInfo(context.Compilation, assemblyCalls);
 
         StringBuilder sb = new();
-        GenerateAsmFunctions(sb, assemblyInfos);
+        GenerateAsm(sb, assemblyInfos);
 
         context.AddSource("AsmConverter.g.cs", sb.ToString());
     }
@@ -47,7 +47,6 @@ internal class AsmGenerator : ISourceGenerator
     {
         List<AssemblyInfo> assemblyInfos = new();
 
-        HashSet<Guid> existingAssemblies = new();
         using MD5 md5 = MD5.Create();
 
         foreach ((ArgumentListSyntax assemblerCallArguments, ArgumentListSyntax? variablesCallArguments) in
@@ -63,16 +62,18 @@ internal class AsmGenerator : ISourceGenerator
 
             _instructions = new List<(string mnemonic, List<string> operands)>();
             _labels = new HashSet<string>();
-            string asmString;
 
-            bool inString = assemblerCallArguments.OpenParenToken.TrailingTrivia.Any(t =>
+            string inString;
+            string outString;
+
+            bool isStringFormat = assemblerCallArguments.OpenParenToken.TrailingTrivia.Any(t =>
                 t.IsKind(SyntaxKind.MultiLineCommentTrivia) && StringAsmDetectRegex.IsMatch(t.ToString()));
 
-            if (inString)
+            if (isStringFormat)
             {
                 if (assemblerCallArguments.Arguments[0].Expression is LiteralExpressionSyntax argument)
                 {
-                    asmString = ParseStringInstructions(argument.Token.ValueText, variables);
+                    ParseStringInstructions(argument.Token.ValueText, variables, out inString, out outString);
                 }
                 else
                 {
@@ -81,28 +82,64 @@ internal class AsmGenerator : ISourceGenerator
             }
             else
             {
-                asmString = ParseParamsInstructions(assemblerCallArguments.Arguments, semanticModel, variables);
+                ParseParamsInstructions(assemblerCallArguments.Arguments, semanticModel, variables, out inString,
+                    out outString);
             }
 
-            // get a stable id for the code in a reasonably quick way
-            byte[] argumentsHash = md5.ComputeHash(Encoding.Default.GetBytes(asmString));
-            Guid asmGuid = new(argumentsHash);
+            // There are two ways to turn the input given to AddInstructions into a string that doesn't depend
+            // on the formatting of the input in the case of the string format asm, those involve concatenating
+            // the given tokens either before or after optimisation. For the time being that is the difference
+            // between taking register variables as the name of the variable or the register they represent.
+            // The issue is that at runtime, string format will always be done pre optimisation and params array
+            // format will always be done post optimisation since the variables will be stripped out before the
+            // function call.
+            // This makes it difficult to optimise the number of generated functions since the two formats will
+            // not give the same hash whenever variables are involved, even if they are the same and so the
+            // generated functions match. To solve this, I have replaced the previous switch that was used at
+            // runtime to figure out which function call to use for a given call with a hashmap between strings
+            // representing the guids and delegates representing the functions. This allows improving runtime
+            // performance by removing branching whenever possible and so means that more cases can be added
+            // without issue.
+            // Given this, I can easily have two different hashes(pre and post optimisation for the two formats)
+            // both give the same function which will of course double the number hashes but the use of a hashmap
+            // should still having good performance. For convenience, I have decided that the post optimisation
+            // hash is the primary hash and so for the params array format parsing code, inHash = outHash while
+            // for the string format parsing code, inHash is pre optimisation and outHash is post optimisation.
+            GetHashes(md5, inString, outString, out string inHash, out string outHash);
 
-            if (existingAssemblies.Contains(asmGuid)) continue;
+            AssemblyInfo match = assemblyInfos.Find(asm => asm.OutHash == outHash);
+            if (match != null)
+            {
+                if (inHash != outHash)
+                {
+                    match.InHash = inHash;
+                }
 
-            existingAssemblies.Add(asmGuid);
-            string asmGuidString = asmGuid.ToString("N");
-            assemblyInfos.Add(new AssemblyInfo(asmGuidString, _instructions, _labels));
+                continue;
+            }
+
+            assemblyInfos.Add(new AssemblyInfo(inHash, outHash, _instructions, _labels));
         }
 
         return assemblyInfos;
     }
 
-    // TODO Remove debug statements
-    private static string ParseStringInstructions(string instructionString,
-        IReadOnlyList<(string variable, string register)>? variables)
+    private static void GetHashes(HashAlgorithm hashAlg, string inString, string outString, out string inHash,
+        out string outHash)
     {
-        StringBuilder sbInstructions = new();
+        byte[] inHashBytes = hashAlg.ComputeHash(Encoding.Default.GetBytes(inString));
+        inHash = new Guid(inHashBytes).ToString("N");
+
+        byte[] outHashBytes = hashAlg.ComputeHash(Encoding.Default.GetBytes(outString));
+        outHash = new Guid(outHashBytes).ToString("N");
+    }
+
+    // TODO Remove debug statements
+    private static void ParseStringInstructions(string instructionString,
+        IReadOnlyList<(string variable, string register)>? variables, out string inString, out string outString)
+    {
+        StringBuilder sbInString = new();
+        StringBuilder sbOutString = new();
 
         string[] tokens =
             instructionString.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -110,7 +147,7 @@ internal class AsmGenerator : ISourceGenerator
         foreach (string token in tokens)
         {
             string lowerToken = token.ToLower();
-            sbInstructions.Append(lowerToken);
+            sbInString.Append(lowerToken);
 
             // Instruction Mnemonic
             if (AsmLib.GeneratorInstructions.Instructions.Contains(token))
@@ -123,6 +160,7 @@ internal class AsmGenerator : ISourceGenerator
                 else
                 {
                     _instructions!.Add((lowerToken, new List<string>()));
+                    sbOutString.Append(lowerToken);
                 }
 
                 Debug.WriteLine($"{token} is an instruction");
@@ -133,6 +171,7 @@ internal class AsmGenerator : ISourceGenerator
             if (_instructions!.Count > 0 && AsmLib.GeneratorRegisters.Registers.Contains(token))
             {
                 _instructions.Last().operands.Add(lowerToken);
+                sbOutString.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is a register");
                 continue;
@@ -144,6 +183,7 @@ internal class AsmGenerator : ISourceGenerator
             if (match is { register: { } })
             {
                 _instructions.Last().operands.Add(match.Value.register);
+                sbOutString.Append(match.Value.register);
 
                 Debug.WriteLine($"{token} is a variable corresponding to {match.Value.register}");
                 continue;
@@ -155,6 +195,7 @@ internal class AsmGenerator : ISourceGenerator
             if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
             {
                 _instructions.Last().operands.Add(lowerToken);
+                sbOutString.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is an immediate");
                 continue;
@@ -165,11 +206,13 @@ internal class AsmGenerator : ISourceGenerator
             throw new ArgumentException($"Invalid token passed into asm block: {token}");
         }
 
-        return sbInstructions.ToString();
+        inString = sbInString.ToString();
+        outString = sbOutString.ToString();
     }
 
-    private static string ParseParamsInstructions(SeparatedSyntaxList<ArgumentSyntax> tokenList, SemanticModel semanticModel,
-        IReadOnlyList<(string variable, string register)>? variables)
+    private static void ParseParamsInstructions(SeparatedSyntaxList<ArgumentSyntax> tokenList,
+        SemanticModel semanticModel, IReadOnlyList<(string variable, string register)>? variables, out string inString,
+        out string outString)
     {
         StringBuilder sbInstructions = new();
 
@@ -246,7 +289,7 @@ internal class AsmGenerator : ISourceGenerator
             }
         }
 
-        return sbInstructions.ToString();
+        inString = outString = sbInstructions.ToString();
     }
 
     private static IReadOnlyList<(string variable, string register)> GetVariablesCallInfo(
@@ -261,112 +304,91 @@ internal class AsmGenerator : ISourceGenerator
         return variables.ToList();
     }
 
-    private static void GenerateAsmFunctions(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblyInfos)
+    private static void GenerateAsm(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblyInfos)
     {
-        const string indent = "        ";
+        const string indent = "    ";
 
         //TODO Use namespace containing function call?
         sb.AppendLine(
-@" // <auto-generated />
-using AsmLib;
+$@"// <auto-generated />
 using Iced.Intel;
 using System;
+using System.Collections.Generic;
 using static Iced.Intel.AssemblerRegisters;
 
 namespace AsmLib
-{
-    internal static class Generator
-    {");
-        GenerateAsmWrappersMethod(sb, assemblyInfos, indent);
+{{
+{indent}internal static class Generator
+{indent}{{");
+        GenerateAsmDictionary(sb, assemblyInfos, indent + "    ");
+
+        GenerateAsmWrapperMethod(sb, AssemblyFormat.Params, indent + "    ");
+        GenerateAsmWrapperMethod(sb, AssemblyFormat.String, indent + "    ");
 
         foreach (AssemblyInfo assemblyInfo in assemblyInfos)
         {
-            GenerateAsmConverterMethod(sb, assemblyInfo, indent);
+            GenerateAsmConverterMethod(sb, assemblyInfo, indent + "    ");
         }
 
         sb.AppendLine(
-            @"    }
-}");
+$@"{indent}}}
+}}");
     }
 
-    private static void GenerateAsmWrappersMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
+    private static void GenerateAsmDictionary(StringBuilder sb, IEnumerable<AssemblyInfo> assemblyInfos,
         string indent)
     {
-        GenerateAsmWrapperMethod(sb, indent, AssemblyFormat.Params);
-        GenerateAsmWrapperMethod(sb, indent, AssemblyFormat.String);
+        // This is only marked internal so that the testing library can access it
+        sb.AppendLine($"{indent}internal static Dictionary<string, Action<Assembler>> Implementations = new()");
+        sb.AppendLine($"{indent}{{");
 
-        GenerateAsmHandlerMethod(sb, assemblerInfos, indent);
+        GenerateAsmDictionaryBody(sb, assemblyInfos, indent + "    ");
+
+        sb.AppendLine($"{indent}}};");
+        sb.AppendLine();
     }
 
-    private static void GenerateAsmWrapperMethod(StringBuilder sb, string indent, AssemblyFormat format)
+    private static void GenerateAsmDictionaryBody(StringBuilder sb, IEnumerable<AssemblyInfo> assemblyInfos,
+        string indent)
+    {
+        foreach (AssemblyInfo assemblyInfo in assemblyInfos)
+        {
+            // This is only the case for string format assembly containing labels
+            if (assemblyInfo.InHash != assemblyInfo.OutHash)
+            {
+                sb.AppendLine($"{indent}{{\"{assemblyInfo.InHash}\", Instructions{assemblyInfo.OutHash}}},");
+            }
+
+            sb.AppendLine($"{indent}{{\"{assemblyInfo.OutHash}\", Instructions{assemblyInfo.OutHash}}},");
+        }
+    }
+
+    private static void GenerateAsmWrapperMethod(StringBuilder sb, AssemblyFormat format, string indent)
     {
         string parameter = format == AssemblyFormat.Params ? "params AssemblyData[] assembly" : "string assembly";
 
+        //TODO Write summary
+        sb.AppendLine($"{indent}// <summary> </summary>");
         sb.AppendLine($"{indent}public static void AddInstructions(this Assembler assembler, {parameter})");
         sb.AppendLine($"{indent}{{");
 
-        GenerateAsmWrapperMethodBody(sb, indent + "    ", format);
+        GenerateAsmWrapperMethodBody(sb, format, indent + "    ");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine();
     }
 
-    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, string indent, AssemblyFormat format)
+    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, AssemblyFormat format, string indent)
     {
         sb.AppendLine($"{indent}string guid = AssemblyData.GetGuid{format}(assembly);");
-        sb.AppendLine($"{indent}FindInstructions(assembler, guid);");
-    }
-
-    private static void GenerateAsmHandlerMethod(StringBuilder sb, IReadOnlyList<AssemblyInfo> assemblerInfos,
-        string indent)
-    {
-        sb.AppendLine($"{indent}// <summary> </summary>");
-        sb.AppendLine($"{indent}private static void FindInstructions(this Assembler assembler, string guid)");
-        sb.AppendLine($"{indent}{{");
-
-        if (!assemblerInfos.Any())
-        {
-            sb.AppendLine($"{indent}// This will be filled in by the generator once you call this function");
-            sb.AppendLine($"{indent}throw new Exception(\"This shouldn't be possible.\");");
-        }
-        else
-        {
-            GenerateAsmHandlerMethodBody(sb, assemblerInfos, indent + "    ");
-        }
-
-        sb.AppendLine($"{indent}}}");
-        sb.AppendLine();
-    }
-
-    private static void GenerateAsmHandlerMethodBody(StringBuilder sb, IEnumerable<AssemblyInfo> assemblerInfos,
-        string indent)
-    {
-        sb.AppendLine($"{indent}switch (guid)");
-        sb.AppendLine($"{indent}{{");
-
-        GenerateAsmWrapperMethodBodySwitchBody(sb, assemblerInfos, indent + "    ");
-
-        sb.AppendLine($"{indent}}}");
-    }
-
-    private static void GenerateAsmWrapperMethodBodySwitchBody(StringBuilder sb,
-        IEnumerable<AssemblyInfo> assemblerInfos, string indent)
-    {
-        string innerIndent = indent + "    ";
-
-        foreach (AssemblyInfo asmGenerationInfo in assemblerInfos)
-        {
-            sb.AppendLine($"{indent}case \"{asmGenerationInfo.Guid}\":");
-            sb.AppendLine($"{innerIndent}Instructions{asmGenerationInfo.Guid}(assembler);");
-            sb.AppendLine($"{innerIndent}break;");
-        }
+        sb.AppendLine($"{indent}Implementations[guid](assembler);");
     }
 
     private static void GenerateAsmConverterMethod(StringBuilder sb, AssemblyInfo assemblyInfo, string indent)
     {
         //TODO Write summary
         sb.AppendLine($"{indent}// <summary> </summary>");
-        sb.AppendLine($"{indent}private static void Instructions{assemblyInfo.Guid}(Assembler assembler)");
+        sb.AppendLine($"{indent}private static void Instructions{assemblyInfo.OutHash}(Assembler assembler)");
         sb.AppendLine($"{indent}{{");
 
         GenerateAsmConverterMethodBody(sb, assemblyInfo, indent + "    ");

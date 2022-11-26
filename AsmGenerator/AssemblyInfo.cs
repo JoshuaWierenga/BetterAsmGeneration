@@ -4,16 +4,18 @@ namespace AsmGenerator;
 
 internal class AssemblyInfo
 {
-    internal readonly string Guid;
+    internal string InHash;
+    internal readonly string OutHash;
 
     internal readonly IReadOnlyList<(string mnemonic, List<string> operands)> Instructions;
     internal readonly IReadOnlyCollection<string> Labels;
 
-    public AssemblyInfo(string guid,
+    internal AssemblyInfo(string inHash, string outHash,
         IReadOnlyList<(string mnemonic, List<string> operands)> instructionData,
         IReadOnlyCollection<string> labelData)
     {
-        Guid = guid;
+        InHash = inHash;
+        OutHash = outHash;
 
         Instructions = instructionData;
         Labels = labelData;
