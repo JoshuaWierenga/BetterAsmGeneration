@@ -13,18 +13,18 @@ public class FormatTests
     [TestMethod]
     public void FormatMatchTestSimple()
     {
-        string paramsGuid = AssemblyData.GetGuidParams(new AssemblyData[]
+        string paramsHash = HashGeneration.ToHash(new AssemblyData[]
         {
             mov, rax, 3,
             ret
         });
 
-        string stringGuid = AssemblyData.GetGuidString(@"
+        string stringHash = HashGeneration.ToHash(@"
             mov rax 3
             ret
         ");
 
-        Assert.AreEqual(paramsGuid, stringGuid);
+        Assert.AreEqual(paramsHash, stringHash);
     }
 
     [TestMethod]
@@ -32,8 +32,8 @@ public class FormatTests
     {
         AssemblerRegister64 r;
 
-        Assembler asmParam = new(bitness: 64);
-        asmParam.AddVariables
+        Assembler paramsAsm = new(bitness: 64);
+        paramsAsm.AddVariables
         (
             r = rax
         ).AddInstructions
@@ -42,15 +42,16 @@ public class FormatTests
             ret
         );
 
-        string hashParam = AssemblyData.GetGuidParams(new AssemblyData[]
+        string paramsHash = HashGeneration.ToHash(new AssemblyData[]
         {
             mov, r, 3,
             ret
         });
-        Action<Assembler> implParam = Generator.Implementations[hashParam];
+        // TODO Fix warning about having multiple Generator classes in AsmLib
+        Action<Assembler> paramsImpl = Generator.Implementations[paramsHash];
 
-        Assembler asmString = new(bitness: 64);
-        asmString.AddVariables
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddVariables
         (
             r = rax
         ).AddInstructions( /* language = asm */ @"
@@ -58,30 +59,31 @@ public class FormatTests
             ret
         ");
 
-        string hashString = AssemblyData.GetGuidString(@"
+        string stringHash = HashGeneration.ToHash(@"
             mov r 3
             ret
         ");
-        Action<Assembler> implString = Generator.Implementations[hashString];
+        // TODO Fix warning about having multiple Generator classes in AsmLib
+        Action<Assembler> stringImpl = Generator.Implementations[stringHash];
 
-        Assert.AreEqual(implParam, implString);
+        Assert.AreEqual(paramsImpl, stringImpl);
     }
 
     [TestMethod]
     public void StringFormatFormattingIndependentTest()
     {
-        string stringGuid1 = AssemblyData.GetGuidString(@"
+        string stringHash1 = HashGeneration.ToHash(@"
             mov rax 3
             ret
         ");
 
-        string stringGuid2 = AssemblyData.GetGuidString(@"
+        string stringHash2 = HashGeneration.ToHash(@"
             mov rax 
 3
 
                          ret
         ");
 
-        Assert.AreEqual(stringGuid1, stringGuid2);
+        Assert.AreEqual(stringHash1, stringHash2);
     }
 }

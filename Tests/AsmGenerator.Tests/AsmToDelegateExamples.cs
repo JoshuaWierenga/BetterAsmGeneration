@@ -1,4 +1,3 @@
-using System;
 using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
@@ -14,25 +13,35 @@ public unsafe class AsmToDelegateExamples
     [TestMethod]
     public void Add()
     {
-        Assembler asm = new(bitness: 64);
-        asm.AddInstructions
+        Assembler paramsAsm = new(bitness: 64);
+        paramsAsm.AddInstructions
         (
             mov, rax, rcx,
             add, rax, rdx,
             ret
         );
 
-        var addFunction = asm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
-        Assert.AreEqual(44ul, addFunction(31, 13));
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddInstructions(/* language = asm */ @"
+            mov rax rcx
+            add rax rdx
+            ret
+        ");
+
+        var paramsFunc = paramsAsm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
+        var stringFunc = stringAsm.ToFunctionPointerWinX64<ulong, ulong, ulong>();
+
+        Assert.AreEqual(44ul, paramsFunc(31, 13));
+        Assert.AreEqual(44ul, stringFunc(31, 13));
     }
 
     [TestMethod]
     public void Variables()
     {
-        Assembler asm = new(bitness: 64);
         AssemblerRegister64 a, b, c, d;
 
-        asm.AddVariables
+        Assembler paramsAsm = new(bitness: 64);
+        paramsAsm.AddVariables
         (
             a = rcx,
             b = rdx,
@@ -48,22 +57,53 @@ public unsafe class AsmToDelegateExamples
             ret
         );
 
-        var addFunction = asm.ToFunctionPointerWinX64<long, long, long, long, long>();
-        Assert.AreEqual(210L, addFunction(5, 2, 10, 20));
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddVariables
+        (
+            a = rcx,
+            b = rdx,
+            c = r8,
+            d = r9
+        ).AddInstructions(/* language = asm */ @"
+            mov rax a
+            imul rax b
+            mov rbx c
+            imul rbx d
+            add rax rbx
+            ret
+        ");
+        
+        var paramsFunc = paramsAsm.ToFunctionPointerWinX64<long, long, long, long, long>();
+        var stringFunc = stringAsm.ToFunctionPointerWinX64<long, long, long, long, long>();
+
+        Assert.AreEqual(210L, paramsFunc(5, 2, 10, 20));
+        Assert.AreEqual(210L, stringFunc(5, 2, 10, 20));
     }
 
     [TestMethod]
     public void TSC()
     {
-        Assembler asm = new(bitness: 64);
-        asm.AddInstructions
+        Assembler paramsAsm = new(bitness: 64);
+        paramsAsm.AddInstructions
         (
             rdtsc,
             shl, rdx, 32,
             add, rax, rdx,
             ret
         );
-        var tsc = asm.ToFunctionPointerWinX64<ulong>();
-        Console.WriteLine($"{tsc()} cycles since last reset");
+
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddInstructions(/* language = asm */ @"
+            rdtsc
+            shl rdx 32
+            add rax rdx
+            ret
+        ");
+
+        var paramsFunc = paramsAsm.ToFunctionPointerWinX64<ulong>();
+        var stringFunc = stringAsm.ToFunctionPointerWinX64<ulong>();
+
+        // This value of course changes over time so allow for some discrepancy
+        Assert.AreEqual(paramsFunc(), stringFunc(), 1000.0);
     }
 }
