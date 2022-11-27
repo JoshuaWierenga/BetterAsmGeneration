@@ -27,9 +27,8 @@ public class LabelTests
             ret
         );
 
-        //Assembler stringAsm = new(bitness: 64);
-        //Label stringLabel = stringAsm.CreateLabel();
-        /*stringAsm.AddInstructions(/* language = asm *//* @"
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddInstructions(/* language = asm */ @"
             mov rax 0
 
 stringLabel:
@@ -37,13 +36,44 @@ stringLabel:
             cmp rax 5
             jl stringLabel
             ret
-        ");*/
+        ");
 
 
         var paramsFunc = paramsAsm.ToFunctionPointerWinX64<long>();
-        //var stringFunc = stringAsm.ToFunctionPointerWinX64<long>();
+        var stringFunc = stringAsm.ToFunctionPointerWinX64<long>();
 
         Assert.AreEqual(5, paramsFunc());
-        //Assert.AreEqual(5, stringFunc());
+        Assert.AreEqual(5, stringFunc());
+    }
+
+    [TestMethod]
+    public unsafe void UseBeforeDefinitionTest()
+    {
+        Assembler paramsAsm = new(64);
+        Label paramsLabel = paramsAsm.CreateLabel("paramsLabel");
+        paramsAsm.AddInstructions
+        (
+            mov, rax, 0,
+            jmp, paramsLabel,
+            mov, rax, 1,
+            EmitLabel, paramsLabel,
+            ret
+        );
+
+        Assembler stringAsm = new(bitness: 64);
+        stringAsm.AddInstructions(/* language = asm */ @"
+            mov rax 0
+            jmp stringLabel
+            mov rax 1
+stringLabel:
+            ret
+        ");
+
+
+        var paramsFunc = paramsAsm.ToFunctionPointerWinX64<long>();
+        var stringFunc = stringAsm.ToFunctionPointerWinX64<long>();
+
+        Assert.AreEqual(0, paramsFunc());
+        Assert.AreEqual(0, stringFunc());
     }
 }

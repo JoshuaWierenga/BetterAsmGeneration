@@ -131,6 +131,8 @@ internal class AsmGenerator : ISourceGenerator
         string[] tokens =
             instructionString.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
+        HashSet<string> potentialLabelList = new();
+
         foreach (string token in tokens)
         {
             string lowerToken = token.ToLower();
@@ -139,16 +141,13 @@ internal class AsmGenerator : ISourceGenerator
             // Instruction Mnemonic
             if (AsmLib.GeneratorInstructions.Instructions.Contains(token))
             {
-                // TODO Support labels
                 if (lowerToken == "emitlabel")
                 {
-                    throw new ArgumentException("EmitLabel is not currently supported with string instructions");
+                    throw new ArgumentException("EmitLabel is not supported with string instructions, just write the name of the label and then a colon.");
                 }
-                else
-                {
-                    _instructions!.Add((lowerToken, new List<string>()));
-                    sbOutString.Append(lowerToken);
-                }
+
+                _instructions!.Add((lowerToken, new List<string>()));
+                sbOutString.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is an instruction");
                 continue;
@@ -176,7 +175,35 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
-            // TODO Support memory accesses and labels
+            // Label definition 
+            if (lowerToken.EndsWith(":"))
+            {
+                string labelName = lowerToken.Substring(0, lowerToken.Length - 1);
+
+                if (_labels!.Contains(labelName))
+                {
+                    throw new ArgumentException($"The label {token} was defined more than once");
+                }
+
+                _instructions.Add(("Label", new List<string> {labelName}));
+                _labels!.Add(labelName);
+                sbOutString.Append(labelName);
+
+                Debug.WriteLine($"{token} is a label definition");
+                continue;
+            }
+
+            // Label usage after definition
+            if (_labels!.Contains(lowerToken))
+            {
+                _instructions.Last().operands.Add(lowerToken);
+                sbOutString.Append(lowerToken);
+
+                Debug.WriteLine($"{token} is a label usage after definition");
+                continue;
+            }
+
+            // TODO Support memory addresses
 
             //Number
             if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
@@ -188,9 +215,28 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
-            Debug.WriteLine($"{token} was not understood");
+            // Assume any other token is label usage before definition
+            _instructions.Last().operands.Add(lowerToken);
+            sbOutString.Append(lowerToken);
+            potentialLabelList.Add(token); // Use original token for error reporting
 
-            throw new ArgumentException($"Invalid token passed into asm block: {token}");
+            Debug.WriteLine($"{token} may be a label usage before definition");
+
+        }
+
+        foreach (string potentialLabel in potentialLabelList)
+        {
+            string lowerPotentialLabel = potentialLabel.ToLower();
+
+            if (_labels!.Contains(lowerPotentialLabel))
+            {
+                Debug.WriteLine($"{lowerPotentialLabel} was a label usage before definition");
+                continue;
+            }
+
+            Debug.WriteLine($"{potentialLabel} was not understood");
+
+            throw new ArgumentException($"Invalid token passed into asm block: {potentialLabel}");
         }
 
         inString = sbInString.ToString();
