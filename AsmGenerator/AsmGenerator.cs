@@ -101,7 +101,7 @@ internal class AsmGenerator : ISourceGenerator
             // string format asm is used, both pre and post optimisation hashes are generated with both mapping
             // to the same function in the resulting hashmap.
             string outHash = AsmLib.HashGeneration.ToHash(outString);
-            string inHash = isStringFormat ? AsmLib.HashGeneration.ToHash(inString) : outHash;
+            string inHash = isStringFormat && variables != null ? AsmLib.HashGeneration.ToHash(inString) : outHash;
 
             AssemblyInfo match = assemblyInfos.Find(asm => asm.OutHash == outHash);
             if (match != null)
