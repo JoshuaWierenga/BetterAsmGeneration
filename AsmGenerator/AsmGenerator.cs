@@ -185,7 +185,7 @@ internal class AsmGenerator : ISourceGenerator
                     throw new ArgumentException($"The label {token} was defined more than once");
                 }
 
-                _instructions.Add(("Label", new List<string> {labelName}));
+                _instructions.Add(("Label", new List<string> { labelName }));
                 _labels!.Add(labelName);
                 sbOutString.Append(labelName);
 
@@ -221,7 +221,6 @@ internal class AsmGenerator : ISourceGenerator
             potentialLabelList.Add(token); // Use original token for error reporting
 
             Debug.WriteLine($"{token} may be a label usage before definition");
-
         }
 
         foreach (string potentialLabel in potentialLabelList)
@@ -263,7 +262,6 @@ internal class AsmGenerator : ISourceGenerator
                     if (instructionLabel == "emitlabel")
                     {
                         _instructions!.Add(("Label", new List<string>()));
-                        sbInstructions.Append("emit label");
                     }
                     else
                     {

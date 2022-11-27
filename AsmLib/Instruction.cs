@@ -32,7 +32,7 @@ public readonly struct Instruction
         return _type switch
         {
             InstructionType.AsmInstruction => Enum.GetName(typeof(Mnemonic), _instruction) ?? "Unknown Instruction",
-            InstructionType.EmitLabel => "Emit Label",
+            InstructionType.EmitLabel => "",
             _ => throw new Exception()
         };
     }

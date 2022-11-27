@@ -29,7 +29,7 @@ public static class HashGeneration
     public static string ToHash(string data)
     {
 #if ASMLIB
-        string[] asmTokens = data.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] asmTokens = data.Split(new[] { ' ', '\t', '\r', '\n', ':' }, StringSplitOptions.RemoveEmptyEntries);
         string asmString = string.Concat(asmTokens).ToLower();
         byte[] asmBytes = Encoding.GetBytes(asmString);
 #elif ASMGENERATOR
