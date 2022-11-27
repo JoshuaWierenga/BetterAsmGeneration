@@ -100,13 +100,14 @@ internal class AsmGenerator : ISourceGenerator
             // For convenience, I have decided that the post optimisation hash is the primary hash and so whenever
             // string format asm is used, both pre and post optimisation hashes are generated with both mapping
             // to the same function in the resulting hashmap.
-            string inHash = AsmLib.HashGeneration.ToHash(inString);
             string outHash = AsmLib.HashGeneration.ToHash(outString);
+            string inHash = isStringFormat ? AsmLib.HashGeneration.ToHash(inString) : outHash;
 
             AssemblyInfo match = assemblyInfos.Find(asm => asm.OutHash == outHash);
             if (match != null)
             {
-                if (inHash != outHash)
+                // Only want to set InHash if we have actually determined it
+                if (isStringFormat)
                 {
                     match.InHash = inHash;
                 }
