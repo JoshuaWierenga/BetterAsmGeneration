@@ -14,23 +14,36 @@ public class LabelTests
     public unsafe void LoopTest()
     {
         //TODO Support AnonymousLabels and .@B, .@F
-        Assembler asm = new(64);
-        Label label = asm.CreateLabel();
-
-        asm.AddInstructions
+        Assembler paramsAsm = new(64);
+        Label paramsLabel = paramsAsm.CreateLabel("paramsLabel");
+        paramsAsm.AddInstructions
         (
             mov, rax, 0,
 
-            EmitLabel, label,
+            EmitLabel, paramsLabel,
             inc, rax,
             cmp, rax, 5,
-            jl, label,
+            jl, paramsLabel,
             ret
         );
 
-        var loop = asm.ToFunctionPointerWinX64<long>();
+        //Assembler stringAsm = new(bitness: 64);
+        //Label stringLabel = stringAsm.CreateLabel();
+        /*stringAsm.AddInstructions(/* language = asm *//* @"
+            mov rax 0
 
-        long result = loop();
-        Assert.AreEqual(result, 5);
+stringLabel:
+            inc rax
+            cmp rax 5
+            jl stringLabel
+            ret
+        ");*/
+
+
+        var paramsFunc = paramsAsm.ToFunctionPointerWinX64<long>();
+        //var stringFunc = stringAsm.ToFunctionPointerWinX64<long>();
+
+        Assert.AreEqual(5, paramsFunc());
+        //Assert.AreEqual(5, stringFunc());
     }
 }

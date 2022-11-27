@@ -257,7 +257,7 @@ internal class AsmGenerator : ISourceGenerator
                     break;
                 //Label
                 case IdentifierNameSyntax label when typeSymbol?.Name == "Label":
-                    string labelName = label.Identifier.ValueText;
+                    string labelName = label.Identifier.ValueText.ToLower();
                     _instructions!.Last().operands.Add(labelName);
                     _labels!.Add(labelName);
                     sbInstructions.Append(labelName);

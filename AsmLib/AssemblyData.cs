@@ -176,23 +176,26 @@ public struct AssemblyData
             _immediate = new IntegerWrapper(immU64)
         };
 
-    public override string ToString()
+    public override string ToString() => _type switch
     {
-        return _type switch
-        {
-            AssemblyDataType.Instruction => _instruction.ToString(),
-            AssemblyDataType.Register => _register.ToString(),
-            AssemblyDataType.Memory => $"__[{_memory.Base.ToString().ToLower()}]",
-            AssemblyDataType.Label => _label.Name.Substring(3),
-            AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
-            AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
-            AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),
-            AssemblyDataType.ImmediateU16 => _immediate.intU16.ToString(),
-            AssemblyDataType.ImmediateS32 => _immediate.intS32.ToString(),
-            AssemblyDataType.ImmediateU32 => _immediate.intU32.ToString(),
-            AssemblyDataType.ImmediateS64 => _immediate.intS64.ToString(),
-            AssemblyDataType.ImmediateU64 => _immediate.intU64.ToString(),
-            _ => throw new ArgumentOutOfRangeException()
-        };
-    }
+        AssemblyDataType.Instruction => _instruction.ToString(),
+        AssemblyDataType.Register => _register.ToString(),
+        AssemblyDataType.Memory => $"__[{_memory.Base}]",
+        // TODO Find a way to detect if a custom label name was used
+        // __ is added by Iced whenever a label without a custom name
+        // was used but it could also be in a custom name.
+        // This could be detected with a AddLabels source generator
+        // but that feels overkill, perhaps just replace CreateLabel
+        // with an extension method on the assembly that keeps track.
+        AssemblyDataType.Label => _label.Name.StartsWith("__") ? _label.Name.Substring(3) : _label.Name,
+        AssemblyDataType.ImmediateS8 => _immediate.intS8.ToString(),
+        AssemblyDataType.ImmediateU8 => _immediate.intU8.ToString(),
+        AssemblyDataType.ImmediateS16 => _immediate.intS16.ToString(),
+        AssemblyDataType.ImmediateU16 => _immediate.intU16.ToString(),
+        AssemblyDataType.ImmediateS32 => _immediate.intS32.ToString(),
+        AssemblyDataType.ImmediateU32 => _immediate.intU32.ToString(),
+        AssemblyDataType.ImmediateS64 => _immediate.intS64.ToString(),
+        AssemblyDataType.ImmediateU64 => _immediate.intU64.ToString(),
+        _ => throw new ArgumentOutOfRangeException()
+    };
 }
