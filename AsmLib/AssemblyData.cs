@@ -1,8 +1,4 @@
-#nullable enable
 using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Iced.Intel;
 
 namespace AsmLib;
@@ -198,26 +194,5 @@ public struct AssemblyData
             AssemblyDataType.ImmediateU64 => _immediate.intU64.ToString(),
             _ => throw new ArgumentOutOfRangeException()
         };
-    }
-
-    private static readonly MD5 _md5 = MD5.Create();
-
-    public static string GetGuidParams(IEnumerable<AssemblyData> data)
-    {
-        string asmString = string.Concat(data).ToLower();
-        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(asmString));
-        string asmGuid = new Guid(asmHash).ToString("N");
-
-        return asmGuid;
-    }
-
-    public static string GetGuidString(string data)
-    {
-        string[] asmTokens = data.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        string asmString = string.Concat(asmTokens).ToLower();
-        byte[] asmHash = _md5.ComputeHash(Encoding.Default.GetBytes(asmString));
-        string asmGuid = new Guid(asmHash).ToString("N");
-
-        return asmGuid;
     }
 }

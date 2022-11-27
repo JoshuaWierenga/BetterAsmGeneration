@@ -1,14 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>10.0</LangVersion>
 		<Platforms>x64</Platforms>
 
-		<VersionPrefix>0.5.0</VersionPrefix>
+		<VersionPrefix>0.6.0</VersionPrefix>
 
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);ASMGENERATOR</DefineConstants>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -17,6 +21,9 @@
 		</Compile>
 		<Compile Include="..\AsmLib\Generated\GeneratorRegisters.cs">
 			<Link>AsmLib\GeneratorRegisters.cs</Link>
+		</Compile>
+		<Compile Include="..\AsmLib\HashGeneration.cs">
+			<Link>AsmLib\HashGeneration.cs</Link>
 		</Compile>
 	</ItemGroup>
 

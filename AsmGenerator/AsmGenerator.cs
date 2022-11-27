@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -47,8 +46,6 @@ internal class AsmGenerator : ISourceGenerator
     {
         List<AssemblyInfo> assemblyInfos = new();
 
-        using MD5 md5 = MD5.Create();
-
         foreach ((ArgumentListSyntax assemblerCallArguments, ArgumentListSyntax? variablesCallArguments) in
                  assemblerCalls)
         {
@@ -90,22 +87,21 @@ internal class AsmGenerator : ISourceGenerator
             // on the formatting of the input in the case of the string format asm, those involve concatenating
             // the given tokens either before or after optimisation. For the time being that is the difference
             // between taking register variables as the name of the variable or the register they represent.
-            // The issue is that at runtime, string format will always be done pre optimisation and params array
-            // format will always be done post optimisation since the variables will be stripped out before the
-            // function call.
+            // The issue is that at runtime, string format asm will always be processed pre optimisation and
+            // params array format asm will always be processed post optimisation since the variables will
+            // be stripped out before the function call in that case.
             // This makes it difficult to optimise the number of generated functions since the two formats will
             // not give the same hash whenever variables are involved, even if they are the same and so the
-            // generated functions match. To solve this, I have replaced the previous switch that was used at
-            // runtime to figure out which function call to use for a given call with a hashmap between strings
-            // representing the guids and delegates representing the functions. This allows improving runtime
-            // performance by removing branching whenever possible and so means that more cases can be added
-            // without issue.
-            // Given this, I can easily have two different hashes(pre and post optimisation for the two formats)
-            // both give the same function which will of course double the number hashes but the use of a hashmap
-            // should still having good performance. For convenience, I have decided that the post optimisation
-            // hash is the primary hash and so for the params array format parsing code, inHash = outHash while
-            // for the string format parsing code, inHash is pre optimisation and outHash is post optimisation.
-            GetHashes(md5, inString, outString, out string inHash, out string outHash);
+            // generated functions match. To solve this, I have replaced the switch that was used at runtime
+            // to figure out which emitted function to use for a given call to AddInstructions with a hashmap
+            // between strings representing the hashes and delegates representing the functions. This allows
+            // improving runtime performance by removing branching whenever possible and so means that more
+            // cases can be added without issue.
+            // For convenience, I have decided that the post optimisation hash is the primary hash and so whenever
+            // string format asm is used, both pre and post optimisation hashes are generated with both mapping
+            // to the same function in the resulting hashmap.
+            string inHash = AsmLib.HashGeneration.ToHash(inString);
+            string outHash = AsmLib.HashGeneration.ToHash(outString);
 
             AssemblyInfo match = assemblyInfos.Find(asm => asm.OutHash == outHash);
             if (match != null)
@@ -122,16 +118,6 @@ internal class AsmGenerator : ISourceGenerator
         }
 
         return assemblyInfos;
-    }
-
-    private static void GetHashes(HashAlgorithm hashAlg, string inString, string outString, out string inHash,
-        out string outHash)
-    {
-        byte[] inHashBytes = hashAlg.ComputeHash(Encoding.Default.GetBytes(inString));
-        inHash = new Guid(inHashBytes).ToString("N");
-
-        byte[] outHashBytes = hashAlg.ComputeHash(Encoding.Default.GetBytes(outString));
-        outHash = new Guid(outHashBytes).ToString("N");
     }
 
     // TODO Remove debug statements
@@ -372,16 +358,16 @@ $@"{indent}}}
         sb.AppendLine($"{indent}public static void AddInstructions(this Assembler assembler, {parameter})");
         sb.AppendLine($"{indent}{{");
 
-        GenerateAsmWrapperMethodBody(sb, format, indent + "    ");
+        GenerateAsmWrapperMethodBody(sb, indent + "    ");
 
         sb.AppendLine($"{indent}}}");
         sb.AppendLine();
     }
 
-    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, AssemblyFormat format, string indent)
+    private static void GenerateAsmWrapperMethodBody(StringBuilder sb, string indent)
     {
-        sb.AppendLine($"{indent}string guid = AssemblyData.GetGuid{format}(assembly);");
-        sb.AppendLine($"{indent}Implementations[guid](assembler);");
+        sb.AppendLine($"{indent}string hash = HashGeneration.ToHash(assembly);");
+        sb.AppendLine($"{indent}Implementations[hash](assembler);");
     }
 
     private static void GenerateAsmConverterMethod(StringBuilder sb, AssemblyInfo assemblyInfo, string indent)
