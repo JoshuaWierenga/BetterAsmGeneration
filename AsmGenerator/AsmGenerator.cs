@@ -186,7 +186,7 @@ internal class AsmGenerator : ISourceGenerator
                 }
 
                 _instructions.Add(("Label", new List<string> { labelName }));
-                _labels!.Add(labelName);
+                _labels.Add(labelName);
                 sbOutString.Append(labelName);
 
                 Debug.WriteLine($"{token} is a label definition");
@@ -203,7 +203,14 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
-            // TODO Support memory addresses
+            if (lowerToken.StartsWith("__") && lowerToken.EndsWith("]"))
+            {
+                _instructions.Last().operands.Add(lowerToken);
+                sbOutString.Append(lowerToken);
+
+                Debug.WriteLine($"{token} is a memory access");
+                continue;
+            }
 
             //Number
             if (long.TryParse(token, out _) || ulong.TryParse(token, out _))
