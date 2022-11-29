@@ -203,12 +203,14 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
-            if (lowerToken.StartsWith("__") && lowerToken.EndsWith("]"))
+            if (lowerToken.StartsWith("[") && lowerToken.EndsWith("]"))
             {
-                _instructions.Last().operands.Add(lowerToken);
-                sbOutString.Append(lowerToken);
+                string indirectRegisterAddress = "__" + lowerToken;
 
-                Debug.WriteLine($"{token} is a memory access");
+                _instructions.Last().operands.Add(indirectRegisterAddress);
+                sbOutString.Append("__" + indirectRegisterAddress);
+
+                Debug.WriteLine($"{token} is as indirect register address");
                 continue;
             }
 

@@ -45,10 +45,10 @@ public unsafe class VectorTests
 
         Assembler stringAsm = new(bitness: 64);
         stringAsm.AddInstructions(/* language = asm */ @"
-            movdqa xmm0 __[rcx]
-            movdqa xmm1 __[rdx]
+            movdqa xmm0 [rcx]
+            movdqa xmm1 [rdx]
             paddd xmm0 xmm1
-            movdqa __[r8] xmm0
+            movdqa [r8] xmm0
             ret
         ");
 
@@ -94,12 +94,12 @@ public unsafe class VectorTests
 
         Assembler stringAsm = new(bitness: 64);
         stringAsm.AddInstructions(/* language = asm */ @"
-            movaps xmm0 __[rcx]
+            movaps xmm0 [rcx]
             mulps xmm0 xmm0
             haddps xmm0 xmm0
             haddps xmm0 xmm0
             sqrtps xmm0 xmm0
-            movaps __[rdx] xmm0
+            movaps [rdx] xmm0
             ret
         ");
 

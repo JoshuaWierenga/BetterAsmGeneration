@@ -30,9 +30,9 @@ public unsafe class IndirectAddressingTests
 
         Assembler stringAsm = new(bitness: 64);
         stringAsm.AddInstructions(/* language = asm */ @"
-            mov rax __[rcx]
+            mov rax [rcx]
             inc eax
-            mov __[rdx] rax
+            mov [rdx] rax
             ret
         ");
 
