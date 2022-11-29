@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<LangVersion>11.0</LangVersion>
@@ -9,10 +9,6 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
-
-	<ItemGroup>
-	  <None Include="Class1.cs" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AsmToDelegate" Version="0.0.2-alpha" />
