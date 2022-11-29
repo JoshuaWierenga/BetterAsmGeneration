@@ -180,7 +180,7 @@ public struct AssemblyData
     {
         AssemblyDataType.Instruction => _instruction.ToString(),
         AssemblyDataType.Register => _register.ToString(),
-        AssemblyDataType.Memory => $"__[{_memory.Base}]",
+        AssemblyDataType.Memory => $"[{_memory.Base}]",
         // TODO Find a way to detect if a custom label name was used
         // __ is added by Iced whenever a label without a custom name
         // was used but it could also be in a custom name.

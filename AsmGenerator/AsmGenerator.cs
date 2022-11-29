@@ -166,7 +166,7 @@ internal class AsmGenerator : ISourceGenerator
             // Register Variable
             (string variable, string register)? match =
                 variables?.LastOrDefault(v => v.variable == lowerToken);
-            if (match is { register: { } })
+            if (_instructions.Count > 0 && match is { register: { } })
             {
                 _instructions.Last().operands.Add(match.Value.register);
                 sbOutString.Append(match.Value.register);
@@ -193,6 +193,13 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
+            if (_instructions.Count == 0)
+            {
+                Debug.WriteLine($"{lowerToken} was not understood");
+
+                throw new ArgumentException($"Invalid token passed into asm block: {lowerToken}");
+            }
+
             // Label usage after definition
             if (_labels!.Contains(lowerToken))
             {
@@ -208,7 +215,7 @@ internal class AsmGenerator : ISourceGenerator
                 string indirectRegisterAddress = "__" + lowerToken;
 
                 _instructions.Last().operands.Add(indirectRegisterAddress);
-                sbOutString.Append("__" + indirectRegisterAddress);
+                sbOutString.Append(lowerToken);
 
                 Debug.WriteLine($"{token} is as indirect register address");
                 continue;
@@ -306,7 +313,7 @@ internal class AsmGenerator : ISourceGenerator
                 } && _instructions!.Count > 0:
                     string memoryOperand = element.ToFullString();
                     _instructions.Last().operands.Add(memoryOperand);
-                    sbInstructions.Append(memoryOperand);
+                    sbInstructions.Append(memoryOperand.Substring(2));
                     break;
                 //Label
                 case IdentifierNameSyntax label when typeSymbol?.Name == "Label":
