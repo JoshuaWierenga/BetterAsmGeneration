@@ -2,8 +2,8 @@
 
 internal static class GeneratorRegisters
 {
-    // This list allows AsmGenerator to check if a token is an register when given string format assembly
-    // without having to use reflection to access full register list directly
+    // This list allows AsmGenerator to check if a token is a register when given string format assembly
+    // without having to use reflection to access the full register list directly
     internal static string[] Registers = {
         "al",
         "cl",

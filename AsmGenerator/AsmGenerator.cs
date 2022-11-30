@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using AsmLib;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -100,8 +101,8 @@ internal class AsmGenerator : ISourceGenerator
             // For convenience, I have decided that the post optimisation hash is the primary hash and so whenever
             // string format asm is used, both pre and post optimisation hashes are generated with both mapping
             // to the same function in the resulting hashmap.
-            string outHash = AsmLib.HashGeneration.ToHash(outString);
-            string inHash = isStringFormat && variables != null ? AsmLib.HashGeneration.ToHash(inString) : outHash;
+            string outHash = HashGeneration.ToHash(outString);
+            string inHash = isStringFormat && inString != outString ? HashGeneration.ToHash(inString) : outHash;
 
             AssemblyInfo match = assemblyInfos.Find(asm => asm.OutHash == outHash);
             if (match != null)
@@ -133,17 +134,19 @@ internal class AsmGenerator : ISourceGenerator
 
         HashSet<string> potentialLabelList = new();
 
-        foreach (string token in tokens)
+        for (int i = 0; i < tokens.Length; i++)
         {
+            string token = tokens[i];
             string lowerToken = token.ToLower();
             sbInString.Append(lowerToken);
 
             // Instruction Mnemonic
-            if (AsmLib.GeneratorInstructions.Instructions.Contains(token))
+            if (GeneratorInstructions.Instructions.Contains(token))
             {
                 if (lowerToken == "emitlabel")
                 {
-                    throw new ArgumentException("EmitLabel is not supported with string instructions, just write the name of the label and then a colon.");
+                    throw new ArgumentException(
+                        "EmitLabel is not supported with string instructions, just write the name of the label and then a colon.");
                 }
 
                 _instructions!.Add((lowerToken, new List<string>()));
@@ -154,7 +157,7 @@ internal class AsmGenerator : ISourceGenerator
             }
 
             // Register
-            if (_instructions!.Count > 0 && AsmLib.GeneratorRegisters.Registers.Contains(token))
+            if (_instructions!.Count > 0 && GeneratorRegisters.Registers.Contains(token))
             {
                 _instructions.Last().operands.Add(lowerToken);
                 sbOutString.Append(lowerToken);
@@ -210,12 +213,29 @@ internal class AsmGenerator : ISourceGenerator
                 continue;
             }
 
-            if (lowerToken.StartsWith("[") && lowerToken.EndsWith("]"))
+            if (i + 2 < tokens.Length && GeneratorMemorySizes.MemorySizes.Contains(lowerToken) &&
+                tokens[i + 1].ToLower() == "ptr" && tokens[i + 2].ToLower().StartsWith("[") &&
+                tokens[i + 2].ToLower().EndsWith("]"))
             {
-                string indirectRegisterAddress = "__" + lowerToken;
+                string indirectRegisterAddress = $"__{lowerToken}_ptr{tokens[i + 2].ToLower()}";
 
                 _instructions.Last().operands.Add(indirectRegisterAddress);
-                sbOutString.Append(lowerToken);
+                // Need to manually add the following two tokens since they are skipped
+                sbInString.Append("ptr");
+                sbInString.Append(tokens[i + 2].ToLower());
+                sbOutString.Append(indirectRegisterAddress);
+
+                Debug.WriteLine($"{token} {tokens[i + 1]} {tokens[i + 2]} is as indirect register address with custom size");
+                i += 2;
+                continue;
+            }
+
+            if (lowerToken.StartsWith("[") && lowerToken.EndsWith("]"))
+            {
+                string indirectRegisterAddress = $"__{lowerToken}";
+
+                _instructions.Last().operands.Add(indirectRegisterAddress);
+                sbOutString.Append(indirectRegisterAddress);
 
                 Debug.WriteLine($"{token} is as indirect register address");
                 continue;
@@ -313,7 +333,7 @@ internal class AsmGenerator : ISourceGenerator
                 } && _instructions!.Count > 0:
                     string memoryOperand = element.ToFullString();
                     _instructions.Last().operands.Add(memoryOperand);
-                    sbInstructions.Append(memoryOperand.Substring(2));
+                    sbInstructions.Append(memoryOperand);
                     break;
                 //Label
                 case IdentifierNameSyntax label when typeSymbol?.Name == "Label":

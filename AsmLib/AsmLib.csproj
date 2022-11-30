@@ -2,10 +2,11 @@
 
 	<PropertyGroup>
 		<LangVersion>10.0</LangVersion>
-		<TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
+		<!--TODO Add net46 support back, requires replacing Unsafe with pointers which is slower at runtime. -->
+		<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
 		<Platforms>x64</Platforms>
 
-		<VersionPrefix>0.5.2</VersionPrefix>
+		<VersionPrefix>0.6.0</VersionPrefix>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -21,6 +22,16 @@
 			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
 			<DependentUpon>GeneratorInstructions.tt</DependentUpon>
+		</None>
+
+		<Content Include="Generated\GeneratorMemorySizes.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>GeneratorMemorySizes.cs</LastGenOutput>
+		</Content>
+		<None Include="Generated\GeneratorMemorySizes.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>GeneratorMemorySizes.tt</DependentUpon>
 		</None>
 
 		<Content Include="Generated\GeneratorRegisters.tt">
@@ -46,6 +57,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Iced" Version="1.17.0" GeneratePathProperty="true" />
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 
 		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
 	</ItemGroup>

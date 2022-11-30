@@ -1,0 +1,33 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="$(PKGIced)\\lib\\net45\\Iced.dll" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="Iced.Intel" #>
+<#@ output extension=".cs" #>
+namespace AsmLib;
+
+internal static class GeneratorMemorySizes
+{
+    // This list allows AsmGenerator to check if a pair of tokens token are a memory size when given string 
+    // format assembly without having to use reflection to access the full register list directly
+    // TODO Consider supporting iced memory factory size names as well
+    internal static string[] MemorySizes = {
+    <# string[] memorySizesFile = File.ReadAllLines(this.Host.ResolvePath("..\\CustomIcedMemoryOperandSize.cs")); 
+    foreach (string memorySizesFileLine in memorySizesFile)
+    {
+        if (!memorySizesFileLine.EndsWith(","))
+        {
+            continue;
+        } 
+        
+        String memorySizeName = "";
+        
+        if (!memorySizesFileLine.Contains("None")) 
+        {
+            memorySizeName = memorySizesFileLine.Remove(memorySizesFileLine.Length - 1).TrimStart().ToLower();
+        }#>
+    "<#= memorySizeName #>",
+    <# }
+    #>
+};
+}

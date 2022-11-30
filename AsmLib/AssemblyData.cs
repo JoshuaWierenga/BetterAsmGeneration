@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Iced.Intel;
 
 namespace AsmLib;
@@ -176,11 +177,26 @@ public struct AssemblyData
             _immediate = new IntegerWrapper(immU64)
         };
 
+    private static string MemoryToString(AssemblerMemoryOperand memoryOperand)
+    {
+        // Only needed as AssemblerMemoryOperand's Size field is internal and so is its type MemoryOperandSize
+        CustomIcedMemoryOperandSize size =
+            Unsafe.As<AssemblerMemoryOperand, CustomIcedMemoryOperandSize>(ref memoryOperand);
+        string sizeString = "";
+
+        if (size != CustomIcedMemoryOperandSize.None)
+        {
+            sizeString = $"__{size.ToString().ToLower()}_ptr";
+        }
+
+        return sizeString + $"[{memoryOperand.Base}]";
+    }
+
     public override string ToString() => _type switch
     {
         AssemblyDataType.Instruction => _instruction.ToString(),
         AssemblyDataType.Register => _register.ToString(),
-        AssemblyDataType.Memory => $"[{_memory.Base}]",
+        AssemblyDataType.Memory => MemoryToString(_memory),
         // TODO Find a way to detect if a custom label name was used
         // __ is added by Iced whenever a label without a custom name
         // was used but it could also be in a custom name.
