@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AsmGenerator;
+namespace InlineAssembly.Generator;
 
 internal class AsmSyntaxReceiver : ISyntaxReceiver
 {
     //TODO Remove or use
     //public List<InvocationExpressionSyntax> AddVariablesCalls { get; } = new();
     //TODO use features of ArgumentListSyntax or switch to BaseArgumentListSyntax
-    public List<Tuple<ArgumentListSyntax, ArgumentListSyntax?>> AddCalls { get; } = new();
+    internal List<Tuple<ArgumentListSyntax, ArgumentListSyntax?>> AddCalls { get; } = new();
 
     public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
     {

@@ -2,7 +2,7 @@
   "profiles": {
     "AsmMessaround": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\Tests\\AsmMessaround\\AsmMessaround.csproj"
+      "targetProject": "$(SolutionDir)src\\Tests\\AsmMessaround\\AsmMessaround.csproj"
     }
   }
 }

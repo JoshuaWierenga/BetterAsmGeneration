@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>10.0</LangVersion>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Platforms>x64</Platforms>
+
+		<DefineConstants>$(DefineConstants);ASMGENERATOR</DefineConstants>
+
+		<IsRoslynComponent>true</IsRoslynComponent>
+		<WarningLevel>6</WarningLevel>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<VersionPrefix>0.9.0</VersionPrefix>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="$(SolutionDir)src\InlineAssembly\Generated\GeneratorInstructions.cs">
+			<Link>InlineAssembly\GeneratorInstructions.cs</Link>
+		</Compile>
+		<Compile Include="$(SolutionDir)src\InlineAssembly\Generated\GeneratorMemorySizes.cs">
+			<Link>InlineAssembly\GeneratorMemorySizes.cs</Link>
+		</Compile>
+		<Compile Include="$(SolutionDir)src\InlineAssembly\Generated\GeneratorRegisters.cs">
+			<Link>InlineAssembly\GeneratorRegisters.cs</Link>
+		</Compile>
+		<Compile Include="$(SolutionDir)src\InlineAssembly\HashGeneration.cs">
+			<Link>InlineAssembly\HashGeneration.cs</Link>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

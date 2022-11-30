@@ -1,6 +1,8 @@
 <Project>
 
 	<PropertyGroup>
+		<Nullable>enable</Nullable>
+      
 		<BaseOutputPath>$(SolutionDir)build</BaseOutputPath>
   </PropertyGroup>
 

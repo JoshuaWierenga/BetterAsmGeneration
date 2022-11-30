@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineAssembly", "src\InlineAssembly\InlineAssembly.csproj", "{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineAssembly.Generator", "src\InlineAssembly.Generator\InlineAssembly.Generator.csproj", "{E6395553-DA74-4B18-A70A-9B83E4F30604}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +17,10 @@ Global
 		{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}.Debug|x64.Build.0 = Debug|x64
 		{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}.Release|x64.ActiveCfg = Release|x64
 		{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}.Release|x64.Build.0 = Release|x64
+		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Debug|x64.ActiveCfg = Debug|x64
+		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Debug|x64.Build.0 = Debug|x64
+		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Release|x64.ActiveCfg = Release|x64
+		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

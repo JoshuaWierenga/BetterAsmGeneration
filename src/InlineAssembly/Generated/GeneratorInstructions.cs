@@ -2,8 +2,8 @@
 
 internal static class GeneratorInstructions
 {
-    // This list allows AsmGenerator to check if a token is an instruction when given string format assembly
-    // without having to use reflection to access the full instructions list directly
+    // This list allows InlineAssembly.Generator to check if a token is an instruction when given string format
+    // assembly without having to use reflection to access the full instructions list directly
     internal static string[] Instructions = {
         "invalid",
         "aaa",

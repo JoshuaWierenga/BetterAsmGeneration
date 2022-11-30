@@ -4,12 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using AsmLib;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace AsmGenerator;
+namespace InlineAssembly.Generator;
 
 [Generator]
 internal class AsmGenerator : ISourceGenerator
@@ -383,7 +382,7 @@ using System;
 using System.Collections.Generic;
 using static Iced.Intel.AssemblerRegisters;
 
-namespace AsmLib
+namespace InlineAssembly
 {{
 {indent}internal static class Generator
 {indent}{{");
