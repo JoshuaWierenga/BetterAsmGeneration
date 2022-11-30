@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineAssembly", "src\InlineAssembly\InlineAssembly.csproj", "{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineAssembly", "src\InlineAssembly\InlineAssembly.csproj", "{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineAssembly.Generator", "src\InlineAssembly.Generator\InlineAssembly.Generator.csproj", "{E6395553-DA74-4B18-A70A-9B83E4F30604}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InlineAssembly.Generator", "src\InlineAssembly.Generator\InlineAssembly.Generator.csproj", "{E6395553-DA74-4B18-A70A-9B83E4F30604}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6E83B80-2D18-4EBD-AA5E-F6B51A08328E} = {D6E83B80-2D18-4EBD-AA5E-F6B51A08328E}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InlineAssembly.SyntaxHighlighting", "src\InlineAssembly.SyntaxHighlighting\InlineAssembly.SyntaxHighlighting.csproj", "{04580D85-58EC-4476-9D53-B988E8443ECF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +26,10 @@ Global
 		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Debug|x64.Build.0 = Debug|x64
 		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Release|x64.ActiveCfg = Release|x64
 		{E6395553-DA74-4B18-A70A-9B83E4F30604}.Release|x64.Build.0 = Release|x64
+		{04580D85-58EC-4476-9D53-B988E8443ECF}.Debug|x64.ActiveCfg = Debug|x64
+		{04580D85-58EC-4476-9D53-B988E8443ECF}.Debug|x64.Build.0 = Debug|x64
+		{04580D85-58EC-4476-9D53-B988E8443ECF}.Release|x64.ActiveCfg = Release|x64
+		{04580D85-58EC-4476-9D53-B988E8443ECF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -397,4 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-AsmSourceHighlightingExtension/grammars/generated.csharp.asm.tmLanguage
+src/InlineAssembly.SyntaxHighlighting/grammars/generated.csharp.asm.tmLanguage

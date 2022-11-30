@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="567335bb-0eca-46b9-80d5-4f3d96718ab5" Version="0.1.3" Language="en-US" Publisher="Joshua Wierenga" />
-        <DisplayName>C# Inline x86_64 Assembly</DisplayName>
-        <Description xml:space="preserve">Write x86_64 assembly within C#</Description>
+        <Identity Id="InlineAssembly.SyntaxHighlighting.a31757d8-e96f-4079-9f2b-ffad15932b8e" Version="0.1.3" Language="en-US" Publisher="Joshua Wierenga" />
+        <DisplayName>x86 Assembly Syntax Highlighting for C#</DisplayName>
+        <Description xml:space="preserve">Inline Intel syntax x86_64 syntax highlighting in C#, designed to be used with the InlineAssembly nuget package.</Description>
         <MoreInfo>https://github.com/JoshuaWierenga/BetterAsmGeneration</MoreInfo>
         <License>Resources\LICENSE.md</License>
-        <Tags>textmate, bundle, x86_64, assembly, csharp, c#</Tags>
+        <Tags>textmate, bundle, intel, amd, x86, x86_64, assembly, csharp, c#</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
             <ProductArchitecture>amd64</ProductArchitecture>
         </InstallationTarget>
     </Installation>
