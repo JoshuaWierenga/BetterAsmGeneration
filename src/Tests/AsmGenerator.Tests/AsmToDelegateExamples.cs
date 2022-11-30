@@ -1,11 +1,10 @@
-using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static AsmLib.Instructions;
+using static InlineAssembly.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
-namespace AsmGenerator.Tests;
+namespace InlineAssembly.Tests;
 
 [TestClass]
 public unsafe class AsmToDelegateExamples

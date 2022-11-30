@@ -1,15 +1,14 @@
-﻿using AsmToDelegate;
-using Iced.Intel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using AsmLib;
-using static AsmLib.Instructions;
+using AsmToDelegate;
+using Iced.Intel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static InlineAssembly.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
-namespace AsmGenerator.Tests;
+namespace InlineAssembly.Tests;
 
 [TestClass]
 public unsafe class VectorTests

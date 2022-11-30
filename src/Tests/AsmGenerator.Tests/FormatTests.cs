@@ -1,11 +1,10 @@
 ﻿using System;
-using AsmLib;
 using Iced.Intel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static AsmLib.Instructions;
+using static InlineAssembly.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
-namespace AsmGenerator.Tests;
+namespace InlineAssembly.Tests;
 
 [TestClass]
 public class FormatTests
@@ -47,7 +46,7 @@ public class FormatTests
             mov, r, 3,
             ret
         });
-        // TODO Fix warning about having multiple Generator classes in AsmLib
+        // TODO Fix warning about having multiple Generator classes in InlineAssembly
         Action<Assembler> paramsImpl = Generator.Implementations[paramsHash];
 
         Assembler stringAsm = new(bitness: 64);
@@ -63,7 +62,6 @@ public class FormatTests
             mov r 3
             ret
         ");
-        // TODO Fix warning about having multiple Generator classes in AsmLib
         Action<Assembler> stringImpl = Generator.Implementations[stringHash];
 
         Assert.AreEqual(paramsImpl, stringImpl);

@@ -16,10 +16,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="$(SolutionDir)AsmGenerator\AsmGenerator.csproj" 
-		                  OutputItemType="Analyzer" 
+		<ProjectReference Include="$(SolutionDir)src\InlineAssembly\InlineAssembly.csproj" />
+		<ProjectReference Include="$(SolutionDir)src\InlineAssembly.Generator\InlineAssembly.Generator.csproj"
+		                  OutputItemType="Analyzer"
 		                  ReferenceOutputAssembly="false" />
-		<ProjectReference Include="$(SolutionDir)AsmLib\AsmLib.csproj" />
 	</ItemGroup>
 
 </Project>

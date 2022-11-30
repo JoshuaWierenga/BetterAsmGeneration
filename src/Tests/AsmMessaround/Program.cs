@@ -3,20 +3,21 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using AsmLib;
 using AsmToDelegate;
 using Iced.Intel;
+using InlineAssembly;
+using static InlineAssembly.Instructions;
 using static Iced.Intel.AssemblerRegisters;
 
-// Change the extension to csasm within visual studio with the extension loaded for syntax highlighting
 unsafe
 {
     Assembler paramsSimpleExample = new(bitness: 64);
-    paramsSimpleExample.AddInstructions(/* language=asm */ """
-        mov rax rcx
-        add rax rdx
+    paramsSimpleExample.AddInstructions
+    (
+        mov, rax, rcx,
+        add, rax, rdx,
         ret
-    """);
+    );
 
     var paramsSimpleExampleFunc = paramsSimpleExample.ToFunctionPointerWinX64<ulong, ulong, ulong>();
 
@@ -31,14 +32,15 @@ unsafe
         b = rdx,
         c = r8,
         d = r9
-    ).AddInstructions(/* language=asm */ """ 
-        mov rax a
-        imul rax b
-        mov rbx c
-        imul rbx d
-        add rax rbx
+    ).AddInstructions
+    (
+        mov, rax, a,
+        imul, rax, b,
+        mov, rbx, c,
+        imul, rbx, d,
+        add, rax, rbx,
         ret
-    """);
+    );
 
     var paramsVariableExampleFunc = paramsVariableExample.ToFunctionPointerWinX64<ulong, ulong, ulong, ulong, ulong>();
     
@@ -55,13 +57,13 @@ unsafe
     IntPtr iUpper = new(pUpper);
     IntPtr iResult = new(pResult);
     Assembler paramsMemoryAccessExample = new(bitness: 64);
-    paramsMemoryAccessExample.AddInstructions(/* language=asm */ """
-        movdqa xmm0 __[rcx]
-        movdqa xmm1 __[rdx]
-        paddd xmm0 xmm1
-        movdqa __[r8] xmm0
+    paramsMemoryAccessExample.AddInstructions(
+        movdqa, xmm0, __[rcx],
+        movdqa, xmm1, __[rdx],
+        paddd, xmm0, xmm1,
+        movdqa, __[r8], xmm0,
         ret
-    """);
+    );
 
     var paramsMemoryAccessExampleFunc = paramsMemoryAccessExample.ToFunctionPointerWinX64<IntPtr, IntPtr, IntPtr, byte>();
 
