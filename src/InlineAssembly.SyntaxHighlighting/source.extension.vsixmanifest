@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="InlineAssembly.SyntaxHighlighting.a31757d8-e96f-4079-9f2b-ffad15932b8e" Version="0.2.0" Language="en-US" Publisher="Joshua Wierenga" />
+        <Identity Id="InlineAssembly.SyntaxHighlighting.a31757d8-e96f-4079-9f2b-ffad15932b8e" Version="0.3.0" Language="en-US" Publisher="Joshua Wierenga" />
         <DisplayName>x86 Assembly Syntax Highlighting for C#</DisplayName>
         <Description xml:space="preserve">Inline Intel syntax x86_64 syntax highlighting in C#, designed to be used with the InlineAssembly nuget package.</Description>
         <MoreInfo>https://github.com/JoshuaWierenga/BetterAsmGeneration</MoreInfo>
@@ -16,9 +16,11 @@
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.16.0" DisplayName="Visual Studio MPF 16.0" d:Source="Installed" Version="[16.0,17.0)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="languages.pkgdef" />
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     </Assets>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />

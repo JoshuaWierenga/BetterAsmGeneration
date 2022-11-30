@@ -13,7 +13,7 @@
 		<RepositoryUrl>https://github.com/JoshuaWierenga/BetterAsmGeneration</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryBranch>ActualAssembly</RepositoryBranch>
-		<RepositoryCommit>e5d8ad7fc961fdfbc1fd0bf63e0dad862186541c</RepositoryCommit>
+		<RepositoryCommit>b4be204a6922a349c5ed81fca3f0b3db1f3720d2</RepositoryCommit>
 	</PropertyGroup>
 
 </Project>
