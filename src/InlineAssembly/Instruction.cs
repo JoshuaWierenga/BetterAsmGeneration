@@ -1,7 +1,7 @@
 ﻿using System;
 using Iced.Intel;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 internal enum InstructionType : byte
 {
@@ -21,6 +21,7 @@ public readonly struct Instruction
         _instruction = instruction;
     }
 
+    // TODO Check where this is used
     internal Instruction(bool label)
     {
         _type = InstructionType.EmitLabel;

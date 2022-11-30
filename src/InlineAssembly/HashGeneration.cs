@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 public static class HashGeneration
 {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<LangVersion>10.0</LangVersion>
@@ -6,11 +6,15 @@
 		<TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
 		<Platforms>x64</Platforms>
 
-		<VersionPrefix>0.6.0</VersionPrefix>
+		<DefineConstants>$(DefineConstants);ASMLIB</DefineConstants>
+
+		<WarningLevel>6</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <DefineConstants>$(DefineConstants);ASMLIB</DefineConstants>
+		<VersionPrefix>0.6.0</VersionPrefix>
+		<Description>Write x86_64 assembly within C#</Description>
+		<PackageTags>intel, amd, x86, x86_64, inline, assembly</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,9 +22,10 @@
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorInstructions.cs</LastGenOutput>
 		</Content>
+		<Compile Remove="Generated\GeneratorInstructions.cs" />
 		<None Include="Generated\GeneratorInstructions.cs">
-			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
 			<DependentUpon>GeneratorInstructions.tt</DependentUpon>
 		</None>
 
@@ -28,9 +33,10 @@
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorMemorySizes.cs</LastGenOutput>
 		</Content>
+		<Compile Remove="Generated\GeneratorMemorySizes.cs" />
 		<None Include="Generated\GeneratorMemorySizes.cs">
-			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
 			<DependentUpon>GeneratorMemorySizes.tt</DependentUpon>
 		</None>
 
@@ -38,9 +44,10 @@
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorRegisters.cs</LastGenOutput>
 		</Content>
+		<Compile Remove="Generated\GeneratorRegisters.cs" />
 		<None Include="Generated\GeneratorRegisters.cs">
-			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
 			<DependentUpon>GeneratorRegisters.tt</DependentUpon>
 		</None>
 
@@ -49,8 +56,8 @@
 			<LastGenOutput>Instructions.cs</LastGenOutput>
 		</Content>
 		<Compile Update="Generated\Instructions.cs">
-			<AutoGen>True</AutoGen>
 			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
 			<DependentUpon>Instructions.tt</DependentUpon>
 		</Compile>
 	</ItemGroup>

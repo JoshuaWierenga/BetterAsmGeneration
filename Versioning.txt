@@ -12,6 +12,7 @@ AsmLib
 0.5.0(f0f7c74216e915a66f403ed622875826425a7f70, 2022-11-28T00:07:00+11:00): Merge hashing system with AsmGenerator to ensure consistant results with no crashes
 0.5.1(30811382410e0ec4a5959c3400faccf7a520e390, 2022-11-28T02:19:00+11:00): Start supporting custom label names and multiple labels
 0.5.2(faad02d97774bb965873946d1ff8d7e20d099c60, 2022-11-28T04:43:00+11:00): Decrease differences between the format's hashing result when using labels
+0.6.0(e5d8ad7fc961fdfbc1fd0bf63e0dad862186541c, 2022-11-30T13:45:00+11:00): Add support for specifying indirect address size
 
 AsmGenerator
 0.1.0(9c52de2fa4d213c935d68ee25c0c5ec8f04107a3, 2022-11-25T02:27:00+11:00): Start adding string format assembly support
@@ -28,4 +29,4 @@ AsmGenerator
 0.7.1(faad02d97774bb965873946d1ff8d7e20d099c60, 2022-11-28T04:43:00+11:00): Remove a difference between hashing result between formats when using labels
 0.7.2(b04cbccee0a3d725b6f406ceb704d1a8866f92be, 2022-11-28T06:19:00+11:00): Further reduce needless calculations while hashing if string format asm doesn't include varables
 0.8.0(143e54d9708ce203170dd475b99f03f164958484, 2022-11-29T03:50:00+11:00): Add memory support for string format assembly
-
+0.9.0(e5d8ad7fc961fdfbc1fd0bf63e0dad862186541c, 2022-11-30T13:45:00+11:00): Add support for specifying indirect address size

@@ -1,0 +1,17 @@
+<Project>
+
+	<PropertyGroup>
+		<BaseOutputPath>$(SolutionDir)build</BaseOutputPath>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<Authors>Joshua Wierenga</Authors>
+		<Copyright>© Joshua Wierenga 2022</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/JoshuaWierenga/BetterAsmGeneration</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryBranch>ActualAssembly</RepositoryBranch>
+		<RepositoryCommit>e5d8ad7fc961fdfbc1fd0bf63e0dad862186541c</RepositoryCommit>
+	</PropertyGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using Iced.Intel;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 internal enum VariableDataType
 {
@@ -19,17 +19,17 @@ internal enum VariableDataType
 //TODO Generate with a template?
 public class VariableData
 {
-    internal VariableDataType Type;
+    private VariableDataType Type;
 
-    internal AssemblerRegister8 R8;
-    internal AssemblerRegister16 R16;
-    internal AssemblerRegister32 R32;
-    internal AssemblerRegister64 R64;
-    internal AssemblerRegisterST RFP;
-    internal AssemblerRegisterMM RMMX;
-    internal AssemblerRegisterXMM RXMM;
-    internal AssemblerRegisterYMM RYMM;
-    internal AssemblerRegisterZMM RZMM;
+    private AssemblerRegister8 R8;
+    private AssemblerRegister16 R16;
+    private AssemblerRegister32 R32;
+    private AssemblerRegister64 R64;
+    private AssemblerRegisterST RFP;
+    private AssemblerRegisterMM RMMX;
+    private AssemblerRegisterXMM RXMM;
+    private AssemblerRegisterYMM RYMM;
+    private AssemblerRegisterZMM RZMM;
 
 
     public static implicit operator VariableData(AssemblerRegister8 r8) =>

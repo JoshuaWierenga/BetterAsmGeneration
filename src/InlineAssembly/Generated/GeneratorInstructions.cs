@@ -1,4 +1,4 @@
-﻿namespace AsmLib;
+﻿namespace InlineAssembly;
 
 internal static class GeneratorInstructions
 {

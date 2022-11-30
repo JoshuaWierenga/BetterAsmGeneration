@@ -3,7 +3,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="Iced.Intel" #>
 <#@ output extension=".cs" #>
-namespace AsmLib;
+namespace InlineAssembly;
 
 internal static class GeneratorRegisters
 {

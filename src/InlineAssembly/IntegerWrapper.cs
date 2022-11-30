@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 [StructLayout(LayoutKind.Explicit)]
 internal readonly struct IntegerWrapper

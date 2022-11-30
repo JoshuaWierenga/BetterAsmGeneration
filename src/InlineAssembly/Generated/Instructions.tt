@@ -2,13 +2,12 @@
 <#@ assembly name="$(PKGIced)\\lib\\net45\\Iced.dll" #>
 <#@ import namespace="Iced.Intel" #>
 <#@ output extension=".cs" #>
-namespace AsmLib;
+using Iced.Intel;
 
-internal static class GeneratorInstructions
+namespace InlineAssembly;
+
+public static class Instructions
 {
-    // This list allows AsmGenerator to check if a token is an instruction when given string format assembly
-    // without having to use reflection to access the full instructions list directly
-    internal static string[] Instructions = {
     <# foreach (int i in Enum.GetValues(typeof(Mnemonic)))
     {
         String mnemonic = Enum.GetName(typeof(Mnemonic), i);
@@ -17,8 +16,9 @@ internal static class GeneratorInstructions
         {
             instructionName = "@" + instructionName;
         } #>
-    "<#= instructionName #>",
+public static readonly Instruction <#= instructionName #> = new (Mnemonic.<#= mnemonic #>);
+
     <# }
     #>
-};
+public static readonly Instruction EmitLabel = new (true);
 }

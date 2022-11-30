@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Iced.Intel;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 internal enum AssemblyDataType : byte
 {

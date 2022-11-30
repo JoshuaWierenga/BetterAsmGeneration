@@ -1,6 +1,6 @@
 ﻿using Iced.Intel;
 
-namespace AsmLib;
+namespace InlineAssembly;
 
 public static class Instructions
 {
