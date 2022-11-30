@@ -7,12 +7,16 @@
 
 		<DefineConstants>$(DefineConstants);ASMGENERATOR</DefineConstants>
 
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<IsRoslynComponent>true</IsRoslynComponent>
 		<WarningLevel>6</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>0.9.0</VersionPrefix>
+		<VersionPrefix>0.10.0</VersionPrefix>
+		<Description>Write x86_64 assembly within C#</Description>
+		<PackageTags>intel, amd, x86, x86_64, inline, assembly</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -36,6 +40,10 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 </Project>

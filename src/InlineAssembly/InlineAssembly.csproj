@@ -8,20 +8,21 @@
 
 		<DefineConstants>$(DefineConstants);ASMLIB</DefineConstants>
 
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<WarningLevel>6</WarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>0.6.0</VersionPrefix>
+		<VersionPrefix>0.7.0</VersionPrefix>
 		<Description>Write x86_64 assembly within C#</Description>
 		<PackageTags>intel, amd, x86, x86_64, inline, assembly</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="Generated\GeneratorInstructions.tt">
+		<None Update="Generated\GeneratorInstructions.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorInstructions.cs</LastGenOutput>
-		</Content>
+		</None>
 		<Compile Remove="Generated\GeneratorInstructions.cs" />
 		<None Include="Generated\GeneratorInstructions.cs">
 			<DesignTime>True</DesignTime>
@@ -29,10 +30,10 @@
 			<DependentUpon>GeneratorInstructions.tt</DependentUpon>
 		</None>
 
-		<Content Include="Generated\GeneratorMemorySizes.tt">
+		<None Update="Generated\GeneratorMemorySizes.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorMemorySizes.cs</LastGenOutput>
-		</Content>
+		</None>
 		<Compile Remove="Generated\GeneratorMemorySizes.cs" />
 		<None Include="Generated\GeneratorMemorySizes.cs">
 			<DesignTime>True</DesignTime>
@@ -40,10 +41,10 @@
 			<DependentUpon>GeneratorMemorySizes.tt</DependentUpon>
 		</None>
 
-		<Content Include="Generated\GeneratorRegisters.tt">
+		<None Update="Generated\GeneratorRegisters.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>GeneratorRegisters.cs</LastGenOutput>
-		</Content>
+		</None>
 		<Compile Remove="Generated\GeneratorRegisters.cs" />
 		<None Include="Generated\GeneratorRegisters.cs">
 			<DesignTime>True</DesignTime>
@@ -51,10 +52,10 @@
 			<DependentUpon>GeneratorRegisters.tt</DependentUpon>
 		</None>
 
-		<Content Include="Generated\Instructions.tt">
+		<None Update="Generated\Instructions.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>Instructions.cs</LastGenOutput>
-		</Content>
+		</None>
 		<Compile Update="Generated\Instructions.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>

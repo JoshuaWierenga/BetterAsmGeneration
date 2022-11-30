@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="InlineAssembly.SyntaxHighlighting.a31757d8-e96f-4079-9f2b-ffad15932b8e" Version="0.1.3" Language="en-US" Publisher="Joshua Wierenga" />
+        <Identity Id="InlineAssembly.SyntaxHighlighting.a31757d8-e96f-4079-9f2b-ffad15932b8e" Version="0.2.0" Language="en-US" Publisher="Joshua Wierenga" />
         <DisplayName>x86 Assembly Syntax Highlighting for C#</DisplayName>
         <Description xml:space="preserve">Inline Intel syntax x86_64 syntax highlighting in C#, designed to be used with the InlineAssembly nuget package.</Description>
         <MoreInfo>https://github.com/JoshuaWierenga/BetterAsmGeneration</MoreInfo>
